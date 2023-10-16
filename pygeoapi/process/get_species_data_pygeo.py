@@ -123,7 +123,9 @@ class GetSpeciesData(BaseProcessor):
         LOGGER.debug('Now calling bash which calls R...')
         LOGGER.debug('Current directory: %s' % os.getcwd())
         r_file = os.getcwd()+'/pygeoapi/process/get_species_data.r'
-        temp_dir_path = "/tmp/get_species_data.csv"
+        temp_dir_path =  tempfile.gettempdir()+os.sep+'__output_getspeciesdatatool.csv' # intermediate result storage used by R!
+
+
         polygon_inputfile = "%s/basin_%s/basin_%s.gpkg" % (path_data, basin_id, basin_id)
         cmd = ["/usr/bin/Rscript", "--vanilla", r_file, temp_dir_path, species_name, polygon_inputfile]
         print('Py: Bash command:')
