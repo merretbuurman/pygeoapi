@@ -89,20 +89,29 @@ class GetSpeciesData(BaseProcessor):
 
         print('Starting "get_species_data as ogc_service!"')
 
+        # Defaut directories, if environment var not set:
+        PYGEOAPI_DATA_DIR = '/home/mbuurman/work/hydro_casestudy_saofra/data'
+        PYGEOAPI_COMMAND_DIR = '/home/mbuurman/work/instance_pygeoapi/pygeoapi/pygeoapi/pygeoapi/process'
+
+        # Can we do relative to gwd?
+        print('PY: GETCWD! %s' % os.getcwd())
+
         # Get PYGEOAPI_DATA_DIR from environment:
         #if not 'PYGEOAPI_DATA_DIR' in os.environ:
         #    print('ERROR: Missing environment variable PYGEOAPI_DATA_DIR. We cannot find the input data!\nPlease run:\nexport PYGEOAPI_DATA_DIR="/.../"')
         #    print('Exiting...')
         #    sys.exit(1) # This leads to curl error: (52) Empty reply from server. TODO: Send error message back!!!
+        #path_data = os.environ.get('PYGEOAPI_DATA_DIR')
+        path_data = os.environ.get('PYGEOAPI_DATA_DIR', PYGEOAPI_DATA_DIR)
+        path_cmd = os.environ.get('PYGEOAPI_COMMAND_DIR', PYGEOAPI_COMMAND_DIR)
 
         species_name = data.get("species_name")
         print('Py: Species name:  %s' % species_name)
 
         ### Call R Script:
-        ### Attention: Path to data is hard-coded in R-Script!
-        # #/usr/bin/Rscript --vanilla /home/mbuurman/work/trying_out_hydrographr/get_species_data.R "/tmp/species.csv" "Conorhynchos conirostris" "/home/mbuurman/work/hydro_casestudy_saofra/data/basin_481051/basin_481051.gpkg"
-        path_command = "/home/mbuurman/work/instance_pygeoapi/pygeoapi/pygeoapi/pygeoapi/process/get_species_data.r"
-        #path_command = "get_species_data.r"
+        #How is it called from bash?
+        #/usr/bin/Rscript --vanilla /home/mbuurman/work/trying_out_hydrographr/get_species_data.R "/tmp/species.csv" "Conorhynchos conirostris" "/home/mbuurman/work/hydro_casestudy_saofra/data/basin_481051/basin_481051.gpkg"
+        path_command = path_cmd + os.sep + "get_species_data.r"
         temp_dir_path = "/tmp/get_species_data.csv"
         polygon_inputfile = "/home/mbuurman/work/hydro_casestudy_saofra/data/basin_481051/basin_481051.gpkg"
         cmd = ["/usr/bin/Rscript", "--vanilla", path_command, temp_dir_path, species_name, polygon_inputfile]
@@ -142,6 +151,8 @@ class GetSpeciesData(BaseProcessor):
         -44.357,-15.492768,"14",-44.357,-15.492768,Conorhynchos conirostris,PRESENT,Brazil,"1907"
         '''
         
+
+        ### Convert output to GeoJSON
         print('Py: Read result coordinates from file: %s' % temp_dir_path)
         first_line = True
         output_list = []
@@ -159,6 +170,8 @@ class GetSpeciesData(BaseProcessor):
         import json
         print('Py: OUTPUT GEOJSON: %s' % json.dumps(output_as_geojson))
 
+
+        ### Return output
         outputs = {
             'id': 'species_occurrences',
             'result': output_as_geojson
