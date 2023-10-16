@@ -269,6 +269,7 @@ class SnapToNetworkProcessor(BaseProcessor):
                 # Which columns?
                 coord1, coord2 = splitted[1], splitted[2]
                 LOGGER.debug('Extracted these coordinates %s, %s' % (coord1, coord2))
-                result_multipoint['coordinates'].append([coord2, coord1])
+
+                result_multipoint['coordinates'].append([float(coord2), float(coord1)])
         LOGGER.debug('Finished creating GeoJSON multipoint: %s' % geojson.dumps(result_multipoint))
         return result_multipoint
