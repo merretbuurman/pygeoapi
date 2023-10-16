@@ -1,13 +1,12 @@
 
 # Run this in R
 # From bash:
-#/usr/bin/Rscript --vanilla /home/mbuurman/work/trying_out_hydrographr/get_species_data.R "/tmp/species.csv" "Conorhynchos conirostris"
 #/usr/bin/Rscript --vanilla /home/mbuurman/work/trying_out_hydrographr/get_species_data.R "/tmp/species.csv" "Conorhynchos conirostris" "/home/mbuurman/work/hydro_casestudy_saofra/data/basin_481051/basin_481051.gpkg"
 
 
-# Has to be passed as args from python:
-#outputfilename = paste0(tempdir(), "/", "species_unfiltered.csv")
-#species_name = "Conorhynchos conirostris"
+# These have to be passed as args from python:
+# outputfilename = paste0(tempdir(), "/", "species_unfiltered.csv")
+# species_name = "Conorhynchos conirostris"
 # basinpolygonfilename = "/home/mbuurman/work/hydro_casestudy_saofra/data/basin_481051/basin_481051.gpkg"
 
 # Get command line arguments, passed by python
@@ -63,7 +62,7 @@ basin_poly <- read_sf(basinpolygonfilename)
 
 # Only keep species occurrences and dams within the drainage basin
 print('R: Filtering species occurences by polygon')
-spdata_pts_481051 <- st_filter(spdata_pts, basin_poly)
+spdata_pts_basin <- st_filter(spdata_pts, basin_poly)
 # How many?
 #length(spdata_pts_481051$occurence_id)
 
@@ -72,5 +71,5 @@ spdata_pts_481051 <- st_filter(spdata_pts, basin_poly)
 #st_write(basin_poly, polygonfilename, layer_options = "GEOMETRY=AS_WKT")
 
 print(paste0('R: Writing filtered data to file: ', outputfilename))
-st_write(spdata_pts_481051, outputfilename, layer_options = "GEOMETRY=AS_XY")
+st_write(spdata_pts_basin, outputfilename, layer_options = "GEOMETRY=AS_XY")
 print('R: Done writing to file')

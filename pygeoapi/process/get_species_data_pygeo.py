@@ -17,7 +17,8 @@ import tempfile
 Written by Merret on 2023-10-16
 Just for testing purposes - licenses not checked yet!
 
-curl -X POST "http://localhost:5000/processes/get-species-data/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"species_name\": \"Conorhynchos conirostris\"}}" 
+How to call this, once deployed in pygeoapi?
+curl -X POST "http://localhost:5000/processes/get-species-data/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"species_name\": \"Conorhynchos conirostris\", \"basin_id\": \"481051\"}}"
 
 
 
@@ -50,7 +51,16 @@ PROCESS_METADATA = {
             'schema': {'type': 'string'},
             'minOccurs': 1,
             'maxOccurs': 1,
-            'metadata': None,  # TODO how to use?
+            'metadata': None,
+            'keywords': ['freshwater species']
+        },
+        'basin_id': {
+            'title': 'Basin Id',
+            'description': 'TODO',
+            'schema': {'type': 'string'},
+            'minOccurs': 1,
+            'maxOccurs': 1,
+            'metadata': None,
             'keywords': ['river basin']
         }
     },
@@ -66,7 +76,8 @@ PROCESS_METADATA = {
     },
     'example': {
         'inputs': {
-            'species_name': 'Conorhynchos conirostris'
+            'species_name': 'Conorhynchos conirostris',
+            'basin_id': '481051'
         }
     }
 }
@@ -106,14 +117,17 @@ class GetSpeciesData(BaseProcessor):
         path_cmd = os.environ.get('PYGEOAPI_COMMAND_DIR', PYGEOAPI_COMMAND_DIR)
 
         species_name = data.get("species_name")
+        basin_id = data.get("basin_id")
         print('Py: Species name:  %s' % species_name)
+        print('Py: Basin id:  %s' % basin_id)
+
 
         ### Call R Script:
         #How is it called from bash?
         #/usr/bin/Rscript --vanilla /home/mbuurman/work/trying_out_hydrographr/get_species_data.R "/tmp/species.csv" "Conorhynchos conirostris" "/home/mbuurman/work/hydro_casestudy_saofra/data/basin_481051/basin_481051.gpkg"
         path_command = path_cmd + os.sep + "get_species_data.r"
         temp_dir_path = "/tmp/get_species_data.csv"
-        polygon_inputfile = "/home/mbuurman/work/hydro_casestudy_saofra/data/basin_481051/basin_481051.gpkg"
+        polygon_inputfile = "%s/basin_%s/basin_%s.gpkg" % (path_data, basin_id, basin_id)
         cmd = ["/usr/bin/Rscript", "--vanilla", path_command, temp_dir_path, species_name, polygon_inputfile]
         print('Py: Bash command:')
         print(cmd)
