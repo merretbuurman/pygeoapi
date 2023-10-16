@@ -105,7 +105,8 @@ class GetSpeciesData(BaseProcessor):
 
         # Get PYGEOAPI_DATA_DIR from environment:
         #if not 'PYGEOAPI_DATA_DIR' in os.environ:
-        #    print('ERROR: Missing environment variable PYGEOAPI_DATA_DIR. We cannot find the input data!\nPlease run:\nexport PYGEOAPI_DATA_DIR="/.../"')
+        #    err_msg = 'ERROR: Missing environment variable PYGEOAPI_DATA_DIR. We cannot find the input data!\nPlease run:\nexport PYGEOAPI_DATA_DIR="/.../"'
+        #    print(err_msg)
         #    print('Exiting...')
         #    sys.exit(1) # This leads to curl error: (52) Empty reply from server. TODO: Send error message back!!!
         #path_data = os.environ.get('PYGEOAPI_DATA_DIR')
@@ -124,8 +125,6 @@ class GetSpeciesData(BaseProcessor):
         LOGGER.debug('Current directory: %s' % os.getcwd())
         r_file = os.getcwd()+'/pygeoapi/process/get_species_data.r'
         temp_dir_path =  tempfile.gettempdir()+os.sep+'__output_getspeciesdatatool.csv' # intermediate result storage used by R!
-
-
         polygon_inputfile = "%s/basin_%s/basin_%s.gpkg" % (path_data, basin_id, basin_id)
         cmd = ["/usr/bin/Rscript", "--vanilla", r_file, temp_dir_path, species_name, polygon_inputfile]
         print('Py: Bash command:')
@@ -187,7 +186,7 @@ class GetSpeciesData(BaseProcessor):
         ### Return output
         outputs = {
             'id': 'species_occurrences',
-            'result': output_as_geojson
+            'value': output_as_geojson
         }
 
         mimetype = 'application/json'
