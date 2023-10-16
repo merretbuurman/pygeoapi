@@ -99,6 +99,15 @@ PROCESS_METADATA = {
             'maxOccurs': 1,
             'metadata': None,
             'keywords': ['bla']
+        },
+        'basin_id': {
+            'title': 'Basin Id',
+            'description': 'TODO',
+            'schema': {'type': 'string'},
+            'minOccurs': 1,
+            'maxOccurs': 1,
+            'metadata': None,
+            'keywords': ['river basin']
         }
     },
     'outputs': {
@@ -153,6 +162,7 @@ class SnapToNetworkProcessor(BaseProcessor):
         method = data.get('method')
         distance = data.get('distance')
         accumulation = data.get('accumulation')
+        basin_id = data.get("basin_id")
 
         # Check validity of argument:
         if not method in ['distance', 'accumulation', 'both']:
@@ -174,11 +184,11 @@ class SnapToNetworkProcessor(BaseProcessor):
         # TODO: Do we have to cut them smaller for processing?
         #path_accumul_tif = '/home/mbuurman/work/testing_hydrographr/data/basin_481051/accumulation_481051.tif'
         #path_stream_tif  = '/home/mbuurman/work/testing_hydrographr/data/basin_481051/segment_481051.tif'
-        # BEFORE: /home/mbuurman/work/testing_hydrographr/data/
-        # NOW:    /home/mbuurman/work/hydro_casestudy_saofra/data/
-        # TODO The file name is still hardcoded!
-        path_accumul_tif = path_data+os.sep+'basin_481051/accumulation_481051.tif' # TODO Let user specify basin!
-        path_stream_tif  = path_data+os.sep+'basin_481051/segment_481051.tif'
+        # data dir: /home/mbuurman/work/hydro_casestudy_saofra/data/
+        #path_accumul_tif = path_data+os.sep+'basin_481051/accumulation_481051.tif'
+        #path_stream_tif  = path_data+os.sep+'basin_481051/segment_481051.tif'
+        path_accumul_tif = "%s/basin_%s/accumulation_%s.tif" % (path_data, basin_id, basin_id)
+        path_stream_tif = "%s/basin_%s/segment_%s.tif" % (path_data, basin_id, basin_id)
         tmp_dir =  tempfile.gettempdir()
         snap_tmp_path =  tempfile.gettempdir()+os.sep+'__output_snappingtool.txt' # intermediate result storage used by GRASS!
 
