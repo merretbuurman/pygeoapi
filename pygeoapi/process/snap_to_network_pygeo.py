@@ -151,8 +151,8 @@ class SnapToNetworkProcessor(BaseProcessor):
         # Get PYGEOAPI_DATA_DIR from environment:
         if not 'PYGEOAPI_DATA_DIR' in os.environ:
             err_msg = 'ERROR: Missing environment variable PYGEOAPI_DATA_DIR. We cannot find the input data!\nPlease run:\nexport PYGEOAPI_DATA_DIR="/.../"'
-            print(err_msg)
-            #print('Exiting...')
+            LOGGER.error(err_msg)
+            #LOGGER.error('Exiting...')
             #sys.exit(1) # This leads to curl error: (52) Empty reply from server. TODO: Send error message back!!!
             raise ValueError(err_msg)
         #path_data = os.environ.get('PYGEOAPI_DATA_DIR')
