@@ -100,12 +100,8 @@ class GetSpeciesData(BaseProcessor):
 
         print('Starting "get_species_data as ogc_service!"')
 
-        # Defaut directories, if environment var not set:
+        # Default directories, if environment var not set:
         PYGEOAPI_DATA_DIR = '/home/mbuurman/work/hydro_casestudy_saofra/data'
-        PYGEOAPI_COMMAND_DIR = '/home/mbuurman/work/instance_pygeoapi/pygeoapi/pygeoapi/pygeoapi/process'
-
-        # Can we do relative to gwd?
-        print('PY: GETCWD! %s' % os.getcwd())
 
         # Get PYGEOAPI_DATA_DIR from environment:
         #if not 'PYGEOAPI_DATA_DIR' in os.environ:
@@ -114,7 +110,6 @@ class GetSpeciesData(BaseProcessor):
         #    sys.exit(1) # This leads to curl error: (52) Empty reply from server. TODO: Send error message back!!!
         #path_data = os.environ.get('PYGEOAPI_DATA_DIR')
         path_data = os.environ.get('PYGEOAPI_DATA_DIR', PYGEOAPI_DATA_DIR)
-        path_cmd = os.environ.get('PYGEOAPI_COMMAND_DIR', PYGEOAPI_COMMAND_DIR)
 
         species_name = data.get("species_name")
         basin_id = data.get("basin_id")
@@ -125,10 +120,12 @@ class GetSpeciesData(BaseProcessor):
         ### Call R Script:
         #How is it called from bash?
         #/usr/bin/Rscript --vanilla /home/mbuurman/work/trying_out_hydrographr/get_species_data.R "/tmp/species.csv" "Conorhynchos conirostris" "/home/mbuurman/work/hydro_casestudy_saofra/data/basin_481051/basin_481051.gpkg"
-        path_command = path_cmd + os.sep + "get_species_data.r"
+        LOGGER.debug('Now calling bash which calls R...')
+        LOGGER.debug('Current directory: %s' % os.getcwd())
+        r_file = os.getcwd()+'/pygeoapi/process/get_species_data.r'
         temp_dir_path = "/tmp/get_species_data.csv"
         polygon_inputfile = "%s/basin_%s/basin_%s.gpkg" % (path_data, basin_id, basin_id)
-        cmd = ["/usr/bin/Rscript", "--vanilla", path_command, temp_dir_path, species_name, polygon_inputfile]
+        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, temp_dir_path, species_name, polygon_inputfile]
         print('Py: Bash command:')
         print(cmd)
         print('Py: Run command...')
