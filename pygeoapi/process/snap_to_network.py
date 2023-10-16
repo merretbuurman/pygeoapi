@@ -37,6 +37,7 @@ How to add this service to an existing pygeoapi instance?
 
 Locally, the data dir is:
 export PYGEOAPI_DATA_DIR="/home/mbuurman/work/testing_hydrographr/data/basin_481051"
+export PYGEOAPI_DATA_DIR="/home/mbuurman/work/hydro_casestudy_saofra/data/basin_481051"
 
 '''
 
@@ -137,9 +138,11 @@ class SnapToNetworkProcessor(BaseProcessor):
 
         # Get PYGEOAPI_DATA_DIR from environment:
         if not 'PYGEOAPI_DATA_DIR' in os.environ:
-            print('ERROR: Missing environment variable PYGEOAPI_DATA_DIR. We cannot find the input data!\nPlease run:\nexport PYGEOAPI_DATA_DIR="/.../"')
-            print('Exiting...')
-            sys.exit(1) # This leads to curl error: (52) Empty reply from server. TODO: Send error message back!!!
+            err_msg = 'ERROR: Missing environment variable PYGEOAPI_DATA_DIR. We cannot find the input data!\nPlease run:\nexport PYGEOAPI_DATA_DIR="/.../"'
+            print(err_msg)
+            #print('Exiting...')
+            #sys.exit(1) # This leads to curl error: (52) Empty reply from server. TODO: Send error message back!!!
+            raise ValueError(err_msg)
 
         # Get input:
         method = data.get('method')
@@ -166,6 +169,8 @@ class SnapToNetworkProcessor(BaseProcessor):
         # TODO: Do we have to cut them smaller for processing?
         #path_accumul_tif = '/home/mbuurman/work/testing_hydrographr/data/basin_481051/accumulation_481051.tif'
         #path_stream_tif  = '/home/mbuurman/work/testing_hydrographr/data/basin_481051/segment_481051.tif'
+        # BEFORE: /home/mbuurman/work/testing_hydrographr/data/
+        # NOW:    /home/mbuurman/work/hydro_casestudy_saofra/data/
         # TODO The file name is still hardcoded!
         path_accumul_tif = os.environ['PYGEOAPI_DATA_DIR']+os.sep+'accumulation_481051.tif'
         path_stream_tif  = os.environ['PYGEOAPI_DATA_DIR']+os.sep+'segment_481051.tif'
