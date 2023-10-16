@@ -302,3 +302,8 @@ resources:
         type: process
         processor:
             name: HelloWorld
+
+    get-species-data:
+        type: process
+        processor:
+            name: GetSpeciesData
