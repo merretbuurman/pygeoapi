@@ -98,7 +98,7 @@ class GetSpeciesData(BaseProcessor):
 
     def execute(self, data):
 
-        print('Starting "get_species_data as ogc_service!"')
+        LOGGER.info('Starting "get_species_data as ogc_service!"')
 
         # Default directories, if environment var not set:
         PYGEOAPI_DATA_DIR = '/home/mbuurman/work/hydro_casestudy_saofra/data'
@@ -106,44 +106,43 @@ class GetSpeciesData(BaseProcessor):
         # Get PYGEOAPI_DATA_DIR from environment:
         #if not 'PYGEOAPI_DATA_DIR' in os.environ:
         #    err_msg = 'ERROR: Missing environment variable PYGEOAPI_DATA_DIR. We cannot find the input data!\nPlease run:\nexport PYGEOAPI_DATA_DIR="/.../"'
-        #    print(err_msg)
-        #    print('Exiting...')
+        #    LOGGER.error(err_msg)
+        #    LOGGER.error('Exiting...')
         #    sys.exit(1) # This leads to curl error: (52) Empty reply from server. TODO: Send error message back!!!
         #path_data = os.environ.get('PYGEOAPI_DATA_DIR')
         path_data = os.environ.get('PYGEOAPI_DATA_DIR', PYGEOAPI_DATA_DIR)
 
         species_name = data.get("species_name")
         basin_id = data.get("basin_id")
-        print('Py: Species name:  %s' % species_name)
-        print('Py: Basin id:  %s' % basin_id)
-
+        LOGGER.debug('Py: Species name:  %s' % species_name)
+        LOGGER.debug('Py: Basin id:  %s' % basin_id)
 
         ### Call R Script:
         #How is it called from bash?
         #/usr/bin/Rscript --vanilla /home/mbuurman/work/trying_out_hydrographr/get_species_data.R "/tmp/species.csv" "Conorhynchos conirostris" "/home/mbuurman/work/hydro_casestudy_saofra/data/basin_481051/basin_481051.gpkg"
-        LOGGER.debug('Now calling bash which calls R...')
+        LOGGER.info('Now calling bash which calls R...')
         LOGGER.debug('Current directory: %s' % os.getcwd())
         r_file = os.getcwd()+'/pygeoapi/process/get_species_data.r'
         temp_dir_path =  tempfile.gettempdir()+os.sep+'__output_getspeciesdatatool.csv' # intermediate result storage used by R!
         polygon_inputfile = "%s/basin_%s/basin_%s.gpkg" % (path_data, basin_id, basin_id)
         cmd = ["/usr/bin/Rscript", "--vanilla", r_file, temp_dir_path, species_name, polygon_inputfile]
-        print('Py: Bash command:')
-        print(cmd)
-        print('Py: Run command...')
+        LOGGER.debug('Py: Bash command:')
+        LOGGER.info(cmd)
+        LOGGER.debug('Py: Run command...')
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
         stdoutdata, stderrdata = p.communicate()
-        print("Py: Done running command!")
+        LOGGER.debug("Py: Done running command!")
 
 
         ### Get return code and output
-        print('Py: Bash process exit code: %s' % p.returncode)
+        LOGGER.info('Py: Bash process exit code: %s' % p.returncode)
         stdouttext = stdoutdata.decode()
         stderrtext = stderrdata.decode()
         if len(stderrdata) > 0:
             err_and_out = '___PROCESS OUTPUT___\n___stdout___\n%s\n___stderr___\n%s\n___END___' % (stdouttext, stderrtext)
         else:
             err_and_out = '___PROCESS OUTPUT___\n___stdout___\n%s\n___(Nothing written to stderr)___\n___END___' % stdouttext
-        print(err_and_out)
+        LOGGER.info(err_and_out)
 
         '''
         X,Y,occurence_id,longitude,latitude,species,occurrenceStatus,country,year
@@ -165,7 +164,7 @@ class GetSpeciesData(BaseProcessor):
         
 
         ### Convert output to GeoJSON
-        print('Py: Read result coordinates from file: %s' % temp_dir_path)
+        LOGGER.debug('Py: Read result coordinates from file: %s' % temp_dir_path)
         first_line = True
         output_list = []
         with open(temp_dir_path, mode='r') as myfile:  # b is important -> binary
@@ -175,12 +174,12 @@ class GetSpeciesData(BaseProcessor):
                     continue
                 line = line.strip().split(',')
                 west, south = line[0], line[1]
-                print('  West: %s, South: %s' % (west, south))
+                LOGGER.debug('  West: %s, South: %s' % (west, south))
                 output_list.append([float(west), float(south)])
 
         output_as_geojson = {"type": "MultiPoint", "coordinates": output_list}
         import json
-        print('Py: OUTPUT GEOJSON: %s' % json.dumps(output_as_geojson))
+        LOGGER.info('Py: OUTPUT GEOJSON: %s' % json.dumps(output_as_geojson))
 
 
         ### Return output
