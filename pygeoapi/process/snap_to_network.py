@@ -26,7 +26,7 @@ Done to to understand what that one is doing exactly!
 Documentation:
 https://glowabio.github.io/hydrographr/reference/snap_to_network.html
 
-How to call this service?
+How to call this, once deployed in pygeoapi?
 curl -X POST "http://localhost:5000/processes/snap-to-network/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"method\": \"distance\", \"accumulation\": 0.5, \"distance\": 500, \"coordinate_multipoint\":{\"coordinates\": [[-17.25355, -44.885825], [-13.763611, -43.595833]], \"type\": \"MultiPoint\"}}}" 
 
 How to add this service to an existing pygeoapi instance?
@@ -70,7 +70,7 @@ PROCESS_METADATA = {
             },
             'minOccurs': 1,
             'maxOccurs': 1,
-            'metadata': None,  # TODO how to use?
+            'metadata': None,  # TODO how to use the Metadata item?
             'keywords': ['coordinates']
         },
         'method': {
@@ -79,7 +79,7 @@ PROCESS_METADATA = {
             'schema': {'type': 'string'},
             'minOccurs': 1,
             'maxOccurs': 1,
-            'metadata': None,  # TODO how to use?
+            'metadata': None,
             'keywords': ['snapping']
         },
         'distance': {
@@ -88,7 +88,7 @@ PROCESS_METADATA = {
             'schema': {'type': 'string'},
             'minOccurs': 1,
             'maxOccurs': 1,
-            'metadata': None,  # TODO how to use?
+            'metadata': None,
             'keywords': ['bla']
         },
         'accumulation': {
@@ -97,7 +97,7 @@ PROCESS_METADATA = {
             'schema': {'type': 'string'},
             'minOccurs': 1,
             'maxOccurs': 1,
-            'metadata': None,  # TODO how to use?
+            'metadata': None,
             'keywords': ['bla']
         }
     },
