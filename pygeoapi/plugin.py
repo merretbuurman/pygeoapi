@@ -68,6 +68,7 @@ PLUGINS = {
     'process': {
         'HelloWorld': 'pygeoapi.process.hello_world.HelloWorldProcessor',
         'SnapToNetwork': 'pygeoapi.process.snap_to_network_pygeo.SnapToNetworkProcessor'
+        'GetSpeciesData': 'pygeoapi.process.get_species_data_pygeo.GetSpeciesData'
     },
     'process_manager': {
         'Dummy': 'pygeoapi.process.manager.dummy.DummyManager',
