@@ -10,6 +10,8 @@ import geojson
 import os
 import sys
 import tempfile
+import random
+import string
 
 
 '''
@@ -123,7 +125,8 @@ class GetSpeciesData(BaseProcessor):
         LOGGER.info('Now calling bash which calls R...')
         LOGGER.debug('Current directory: %s' % os.getcwd())
         r_file = os.getcwd()+'/pygeoapi/process/get_species_data.r'
-        temp_dir_path =  tempfile.gettempdir()+os.sep+'__output_getspeciesdatatool.csv' # intermediate result storage used by R!
+        randomstring = (''.join(random.sample(string.ascii_lowercase+string.digits, 5)))
+        temp_dir_path =  tempfile.gettempdir()+os.sep+'__output_getspeciesdatatool_'+randomstring+'.csv' # intermediate result storage used by R!
         polygon_inputfile = "%s/basin_%s/basin_%s.gpkg" % (path_data, basin_id, basin_id)
         cmd = ["/usr/bin/Rscript", "--vanilla", r_file, temp_dir_path, species_name, polygon_inputfile]
         LOGGER.debug('Py: Bash command:')
@@ -176,6 +179,11 @@ class GetSpeciesData(BaseProcessor):
                 west, south = line[0], line[1]
                 LOGGER.debug('  West: %s, South: %s' % (west, south))
                 output_list.append([float(west), float(south)])
+
+        # Remove file - not during debugging, but in production we should probably
+        #if os.path.exists(temp_dir_path):
+        #    os.remove(temp_dir_path)
+        #    LOGGER.debug('Intermediate file "%s" has been removed.' % temp_dir_path)
 
         output_as_geojson = {"type": "MultiPoint", "coordinates": output_list}
         import json
