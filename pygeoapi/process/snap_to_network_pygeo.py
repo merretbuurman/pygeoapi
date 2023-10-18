@@ -10,6 +10,8 @@ import geojson
 import os
 import sys
 import tempfile
+import random
+import string
 
 
 '''
@@ -192,7 +194,8 @@ class SnapToNetworkProcessor(BaseProcessor):
         path_accumul_tif = "%s/basin_%s/accumulation_%s.tif" % (path_data, basin_id, basin_id)
         path_stream_tif = "%s/basin_%s/segment_%s.tif" % (path_data, basin_id, basin_id)
         tmp_dir =  tempfile.gettempdir()
-        snap_tmp_path =  tempfile.gettempdir()+os.sep+'__output_snappingtool.txt' # intermediate result storage used by GRASS!
+        randomstring = (''.join(random.sample(string.ascii_lowercase+string.digits, 5)))
+        snap_tmp_path =  tempfile.gettempdir()+os.sep+'__output_snappingtool_'+randomstring+'.txt' # intermediate result storage used by GRASS!
 
         # Now call the tool:
         snap_tmp_path = self.call_snap_to_network_sh(input_coord_file_path,
@@ -206,6 +209,11 @@ class SnapToNetworkProcessor(BaseProcessor):
         LOGGER.debug('________________________________')
         LOGGER.info('Result multipoint: %s' % result_multipoint)
         #LOGGER.info('Result multipoint: %s (dumped)' % geosjon.dumps(result_multipoint))
+
+        # Remove file - not during debugging, but in production we should probably
+        #if os.path.exists(snap_tmp_path):
+        #    os.remove(snap_tmp_path)
+        #    LOGGER.debug('Intermediate file "%s" has been removed.' % snap_tmp_path)
 
         outputs = {
             'id': 'snapped_points',
