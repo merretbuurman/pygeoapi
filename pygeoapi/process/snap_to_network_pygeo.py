@@ -29,7 +29,6 @@ Documentation:
 https://glowabio.github.io/hydrographr/reference/snap_to_network.html
 
 How to call this, once deployed in pygeoapi?
-curl -X POST "http://localhost:5000/processes/snap-to-network/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"method\": \"distance\", \"accumulation\": 0.5, \"distance\": 500, \"coordinate_multipoint\":{\"coordinates\": [[-17.25355, -44.885825], [-13.763611, -43.595833]], \"type\": \"MultiPoint\"}}}" 
 curl -X POST "http://localhost:5000/processes/snap-to-network/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"method\": \"distance\", \"basin_id\": \"481051\", \"accumulation\": 0.5, \"distance\": 500, \"coordinate_multipoint\":{\"coordinates\": [[-44.885825, -17.25355], [-43.595833, -13.763611]], \"type\": \"MultiPoint\"}}}"
 
 
@@ -150,7 +149,7 @@ class SnapToNetworkProcessor(BaseProcessor):
 
 
         # Defaut directories, if environment var not set:
-        PYGEOAPI_DATA_DIR = '/home/mbuurman/work/hydro_casestudy_saofra/data'
+        PYGEOAPI_DATA_DIR = '/home/mbuurman/work/hydro_casestudy_saofra/data' # TODO in production remove this!
 
         # Get PYGEOAPI_DATA_DIR from environment:
         if not 'PYGEOAPI_DATA_DIR' in os.environ:
