@@ -9,7 +9,6 @@
 Please read the docs at [https://docs.pygeoapi.io](https://docs.pygeoapi.io) for more information.
 
 
-
 ## AquaInfra case
 
 Please add these steps when installing pygeoapi for the AquaInfra case, as they are needed to run the `get_species_data` process!
@@ -17,10 +16,13 @@ Please add these steps when installing pygeoapi for the AquaInfra case, as they 
 * Please install `geojson` in the virtual environment that runs the service (most likely running `cd /home/.../pygeoapi/pygeoapi; 
  . ../bin/activate; pip install geojson` will do the job).
 * Please create a directory for the input data, e.g. `/home/.../work/pygeo/data`
-* Into that directory, add a directory `basin_481051` and into that, put the input vector file `basin_481051.gpkg`. The same for any other river basin you want to support (`481051` being the drainage basin id).
+* Into that directory, add a directory `basin_481051` and into that, put the input vector file `basin_481051.gpkg` (needed for process **get_species_data**)
+* Into `basin_481051`, also put the two input rasters `segment_481051.tif` and `accumulation_481051.tif` (needed for process **snap_to_network**).
+* The same for any other river basin you want to support (`481051` being the drainage basin id).
 * Then, tell pygeoapi where to find the data, by executing: `export PYGEOAPI_DATA_DIR='/home/.../work/pygeo/data'`.
 
 (Merret, 2023-10-18)
+
 
 
 ### Creating basin_481051.gpkg
@@ -69,5 +71,4 @@ merge_tiles(tile_dir = saofra_dir, tile_names = list.files(saofra_dir, full.name
 
 
 (Merret, 2023-10-18)
-
 
