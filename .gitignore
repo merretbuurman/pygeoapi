@@ -125,3 +125,9 @@ pygeoapi/db.sqlite3
 
 # Pycharm project files
 .idea
+
+# AquaINFRA specific
+TRASH
+TRASH/*
+pygeoapi/process/TRASH
+pygeoapi/process/TRASH/*
