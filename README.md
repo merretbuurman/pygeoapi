@@ -72,3 +72,34 @@ merge_tiles(tile_dir = saofra_dir, tile_names = list.files(saofra_dir, full.name
 
 (Merret, 2023-10-18)
 
+
+## Adding a tool
+
+* Go to pygeoapi base dir:
+* Add the tool python code file in: `/home/.../work/instance_pygeoapi/pygeoapi/pygeoapi/pygeoapi/process/`
+* Mention the tool in `/work/instance_pygeoapi/pygeoapi/pygeoapi/pygeoapi/plugin.py`
+* Mention the tool in `/home/.../work/instance_pygeoapi/pygeoapi/pygeoapi/pygeoapi-config.yml`
+
+## Starting up pygeoapi
+
+```
+cd /home/.../work/instance_pygeoapi/pygeoapi/pygeoapi
+
+# start virtual environment:
+ . ../bin/activate
+
+# Now install depencies (only once)
+#which pip
+#pip install geojson
+
+# needed variables:
+export PYGEOAPI_CONFIG=pygeoapi-config.yml
+export PYGEOAPI_OPENAPI=pygeoapi-openapi.yml
+export PYGEOAPI_DATA_DIR="/home/.../work/hydro_casestudy_saofra/data"
+
+# If there were changes, e.g. to the processes:
+python setup.py install
+
+# finally start
+pygeoapi serve
+```
