@@ -14,6 +14,10 @@ import random
 import string
 
 
+from pygeoapi.process.aquainfra.calling_r_scripts import PYGEOAPI_DATA_DIR as DATA_DIR
+from pygeoapi.process.aquainfra.calling_r_scripts import geojson_to_csv
+from pygeoapi.process.aquainfra.calling_r_scripts import xxxxx
+
 '''
 
 Written by Merret on 2023-10-06 - 2023-10-11
@@ -27,16 +31,6 @@ Done to to understand what that one is doing exactly!
 
 Documentation:
 https://glowabio.github.io/hydrographr/reference/snap_to_network.html
-
-How to call this, once deployed in pygeoapi?
-curl -X POST "http://localhost:5000/processes/snap-to-network/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"method\": \"distance\", \"basin_id\": \"481051\", \"accumulation\": 0.5, \"distance\": 500, \"coordinate_multipoint\":{\"coordinates\": [[-44.885825, -17.25355], [-43.595833, -13.763611]], \"type\": \"MultiPoint\"}}}"
-
-
-How to add this service to an existing pygeoapi instance?
-* Add to plugins.py
-* Add to pygeoapi-config.yml
-* Add code into directory process (bash scripts need to be executable!)
-* Install any python dependencies into the pygeoapo virtualenv!
 
 Locally, the data dir is:
 export PYGEOAPI_DATA_DIR="/home/mbuurman/work/hydro_casestudy_saofra/data"
@@ -131,16 +125,8 @@ PROCESS_METADATA = {
 }
 
 class SnapToNetworkProcessor(BaseProcessor):
-    """Get Snap-to-Network Processor example"""
 
     def __init__(self, processor_def):
-        """
-        Initialize object
-
-        :param processor_def: provider definition
-
-        :returns: pygeoapi.process.get_tide_id.SnapToNetworkProcessor
-        """
 
         super().__init__(processor_def, PROCESS_METADATA)
 
@@ -148,6 +134,7 @@ class SnapToNetworkProcessor(BaseProcessor):
         LOGGER.info('Starting "snap_to_network as ogc_service!"')
 
 
+        '''
         # Defaut directories, if environment var not set:
         PYGEOAPI_DATA_DIR = '/home/mbuurman/work/hydro_casestudy_saofra/data' # TODO in production remove this!
 
@@ -160,6 +147,7 @@ class SnapToNetworkProcessor(BaseProcessor):
             raise ValueError(err_msg)
         #path_data = os.environ.get('PYGEOAPI_DATA_DIR')
         path_data = os.environ.get('PYGEOAPI_DATA_DIR', PYGEOAPI_DATA_DIR)
+        '''
 
         # Get input:
         method = data.get('method')
@@ -176,13 +164,28 @@ class SnapToNetworkProcessor(BaseProcessor):
         LOGGER.debug('Input multipoint: %s (%s)' % (multipoint, type(multipoint)))
 
         # Make a file out of the input geojson, as the bash file wants them as a file
+        col_name_lon = 'lon'
+        col_name_lat = 'lat'
+        input_coord_file_path = multipoint_to_csv(multipoint, col_name_lon, col_name_lat)
+
+        # Call the actual tool
+        result_file_path = snap_to_network(input_coord_file_path, basin_id, data_dir)
+        
+        # Result...
+        remove_temp_file = True
+        output_as_geodataframe = csv_coordinates_to_geodataframe(result_file_path, remove_temp_file)
+        # TODO TEST this function was coded for specied data, not for snapping! Still works???
+
+        '''
         # Otherwise, rewrite the bash file to python!
-        input_coord_file_path =  tempfile.gettempdir()+os.sep+'__input_snappingtool.txt'
+        input_coord_file_path =  tempfile.gettempdir()+os.sep+'__input_snappingtool.txt' # TODO: Overwrite? Random name?
         col_name_lat = 'lat'
         col_name_lon = 'lon'
         col_name_id = 'dummy_unused' # or so! I don't think is is really used, is it? TODO check this third column business
         self.make_file_from_geojson(multipoint, input_coord_file_path, col_name_lat, col_name_lon)
+        '''
 
+        '''
         # Hardcoded paths on server:
         # TODO: Do we have to cut them smaller for processing?
         #path_accumul_tif = '/home/mbuurman/work/testing_hydrographr/data/basin_481051/accumulation_481051.tif'
@@ -213,11 +216,28 @@ class SnapToNetworkProcessor(BaseProcessor):
         #if os.path.exists(snap_tmp_path):
         #    os.remove(snap_tmp_path)
         #    LOGGER.debug('Intermediate file "%s" has been removed.' % snap_tmp_path)
+        '''
 
+        # Convert to geojson:
+        output_as_geodataframe = xyzxyzxy
+        LOGGER.debug('Converting result to GeoJSON...')
+        output_as_geojson_string = output_as_geodataframe.to_json()
+        output_as_geojson_pretty = geojson.loads(output_as_geojson_string)
+        LOGGER.debug('Converting done. Result as geojson: %s ... ... ...' % output_as_geojson_string[0:200])
+
+        # Return outputs:
+        # TODO: Should we just return the GeoJSON and leave out this id stuff? Read specs!
+        outputs = {
+            'id': 'dams_grand',
+            'value': output_as_geojson_pretty
+        }
+
+        '''
         outputs = {
             'id': 'snapped_points',
             'value': result_multipoint
         }
+        '''
 
         mimetype = 'application/json'
         return mimetype, outputs
@@ -226,6 +246,7 @@ class SnapToNetworkProcessor(BaseProcessor):
         return f'<SnapToNetworkProcessor> {self.name}'
 
 
+    '''
     def make_file_from_geojson(self, multipoint, input_coord_file_path, col_name_lat='lat', col_name_lon='lon', sep=','):
 
         LOGGER.debug('Writing input coordinates from geojson into "%s"...' % input_coord_file_path)
@@ -247,8 +268,9 @@ class SnapToNetworkProcessor(BaseProcessor):
         # So I now added another dummy foo column in front.
 
         return input_coord_file_path
+    '''
 
-
+    '''
     def call_snap_to_network_sh(self, path_coord_file, id_col_name, lon_col_name, lat_col_name, path_stream_tif, path_accumul_tif, method, distance, accumulation, snap_tmp_path, tmp_dir):
         
         with open(snap_tmp_path, 'w') as myfile:
@@ -269,6 +291,7 @@ class SnapToNetworkProcessor(BaseProcessor):
         else:
             LOGGER.debug('(Nothing written to stderr: "%s")' % stderrdata.decode())
         return snap_tmp_path
+    '''
 
 
     def csv_to_geojson(self, snap_tmp_path):
