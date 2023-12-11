@@ -69,7 +69,9 @@ PLUGINS = {
         'HelloWorld': 'pygeoapi.process.hello_world.HelloWorldProcessor',
         'SnapToNetwork': 'pygeoapi.process.snap_to_network_pygeo.SnapToNetworkProcessor',
         'GetSpeciesData': 'pygeoapi.process.get_species_data_pygeo.GetSpeciesData',
-        'GetDrainageBasin': 'pygeoapi.process.get_drainage_basin_polygon_pygeo.DrainageBasinProcessor'
+        'GetDrainageBasin': 'pygeoapi.process.get_drainage_basin_polygon_pygeo.DrainageBasinProcessor',
+        'GetDamFHReD': 'pygeoapi.process.get_dams_fhred_pygeo.DamFhredProcessor',
+        'GetDamGRanD': 'pygeoapi.process.get_dams_grand_pygeo.DamGrandProcessor'
     },
     'process_manager': {
         'Dummy': 'pygeoapi.process.manager.dummy.DummyManager',

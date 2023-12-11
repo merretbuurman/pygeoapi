@@ -106,6 +106,14 @@ resources:
         processor:
             name: GetDrainageBasin
 
+    get-dams-fhred:
+        type: process
+        processor:
+            name: GetDamFHReD
 
+    get-dams-grand:
+        type: process
+        processor:
+            name: GetDamGRanD
 
 
