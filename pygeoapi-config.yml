@@ -308,3 +308,8 @@ resources:
         processor:
             name: HelcomGridunits
 
+    assessment-indicator:
+        type: process
+        processor:
+            name: HelcomAssessmentIndicator
+
