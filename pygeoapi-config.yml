@@ -100,3 +100,12 @@ resources:
         type: process
         processor:
             name: GetSpeciesData
+
+    get-drainage-basin:
+        type: process
+        processor:
+            name: GetDrainageBasin
+
+
+
+
