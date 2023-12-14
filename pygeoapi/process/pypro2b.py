@@ -14,8 +14,7 @@ import string
 import traceback
 
 '''
-curl -X POST "http://130.225.37.27:5000/processes/assessment-indicator-b/execution" -H "Content-Type: application/json"
--d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"2011-2016-TODO\"}}"
+curl -X POST "http://130.225.37.27:5000/processes/assessment-indicator-b/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"abc;def;ghi\"}}"
 
 '''
 
@@ -116,6 +115,8 @@ class HELCOMAssessmentIndicatorBProcessor(BaseProcessor):
         # Define output path for this run:
         randomstring = (''.join(random.sample(string.ascii_lowercase+string.digits, 6)))
         output_temp_dir = tempfile.gettempdir()+os.sep+randomstring
+        if not os.path.exists(output_temp_dir):
+            os.makedirs(output_temp_dir)
 
         # Add the received input to that dir:
         input_temp_path = output_temp_dir+os.sep+'AnnualIndicators.csv'
@@ -128,8 +129,15 @@ class HELCOMAssessmentIndicatorBProcessor(BaseProcessor):
         ########################
         # I think it takes the map of the assessment units and makes grid units. What for?
     
-        # Define input file paths: Unitsfile, Configuration file.
-        configurationFileName = ...
+        # Define input file path: Configuration file.
+        if (assessmentPeriod == "1877-9999"):
+            configurationFileName = "1877-9999/Configuration1877-9999.xlsx"
+        elif (assessmentPeriod == "2011-2016"):
+            configurationFileName = "2011-2016/Configuration2011-2016.xlsx"
+        elif assessmentPeriod == "2016-2021":
+            configurationFileName = "2016-2021/Configuration2016-2021.xlsx"
+        else:
+            pass # TODO error
 
         r_file_name = 'HEAT_subpart4_wk4_wk5.R'
         r_file_name = 'HEAT_subpart4_wk5_b.R'

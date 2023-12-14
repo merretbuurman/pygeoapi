@@ -14,8 +14,7 @@ import string
 import traceback
 
 '''
-curl -X POST "http://130.225.37.27:5000/processes/assessment-indicator/execution" -H "Content-Type: application/json" 
--d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\"}}"
+curl -X POST "http://130.225.37.27:5000/processes/assessment-indicator/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\"}}"
 
 
 '''
@@ -115,7 +114,7 @@ class HELCOMAssessmentIndicatorProcessor(BaseProcessor):
         ########################
         # I think it takes the map of the assessment units and makes grid units. What for?
     
-        # Define input file paths: Unitsfile, Configuration file.
+        # Define input file path: Configuration file.
         if (assessmentPeriod == "1877-9999"):
             configurationFileName = "1877-9999/Configuration1877-9999.xlsx"
         elif (assessmentPeriod == "2011-2016"):
