@@ -313,3 +313,7 @@ resources:
         processor:
             name: HelcomAssessmentIndicator
 
+    assessment-indicator-b:
+        type: process
+        processor:
+            name: HelcomAssessmentIndicatorB
