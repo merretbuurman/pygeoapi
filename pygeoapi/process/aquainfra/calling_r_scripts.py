@@ -307,7 +307,7 @@ if __name__ == '__main__':
     #logging.basicConfig(filename=logfilename, encoding='utf-8', level=logging.DEBUG)
     logging.basicConfig(level=logging.DEBUG)
 
-    if False:
+    if True:
 
         # Step 1: Get species data filtered by drainage basin:
         print('GET SPECIES DATA')
@@ -339,31 +339,32 @@ if __name__ == '__main__':
 
 
     ### Now test snap to network:
-    print('\nSNAPPING:')
-    basin_id = '481051'
-    method = 'distance'
-    distance = '500'
-    accumulation = '0.5'
-    multipoint = {"type": "MultiPoint", "coordinates": [
-        [-40.492972, -12.948389], [-45.780827, -17.178306], [-45.904444, -17.074722],
-        [-46.893511, -17.397917], [-45.245, -18.136], [-45.24, -18.14], 
-        [-43.138889, -11.092222], [-44.954661, -17.356778], [-43.966667, -14.916667],
-        [-44.954963, -17.336154], [-44.357, -15.49277], [-44.357, -15.492768]
-    ]}
-    col_name_lon = 'lon'
-    col_name_lat = 'lat'
-    sep=',' # snapping tool expects comma-sep
-    input_coord_file_path = multipoint_to_csv(multipoint, col_name_lon, col_name_lat, sep)
-    output_path = snap_to_network(input_coord_file_path, basin_id, method, distance, accumulation, PYGEOAPI_DATA_DIR)
-    print('SNAPPING OUTPUT: %s' % output_path)
+    if True:
+        print('\nSNAPPING:')
+        basin_id = '481051'
+        method = 'distance'
+        distance = '500'
+        accumulation = '0.5'
+        multipoint = {"type": "MultiPoint", "coordinates": [
+            [-40.492972, -12.948389], [-45.780827, -17.178306], [-45.904444, -17.074722],
+            [-46.893511, -17.397917], [-45.245, -18.136], [-45.24, -18.14], 
+            [-43.138889, -11.092222], [-44.954661, -17.356778], [-43.966667, -14.916667],
+            [-44.954963, -17.336154], [-44.357, -15.49277], [-44.357, -15.492768]
+        ]}
+        col_name_lon = 'lon'
+        col_name_lat = 'lat'
+        sep=',' # snapping tool expects comma-sep
+        input_coord_file_path = multipoint_to_csv(multipoint, col_name_lon, col_name_lat, sep)
+        output_path = snap_to_network(input_coord_file_path, basin_id, method, distance, accumulation, PYGEOAPI_DATA_DIR)
+        print('SNAPPING OUTPUT: %s' % output_path)
 
-    #df = pandas.read_csv(output_path, sep=' ')
-    #print(df.head())
-    #gdf = geopandas.GeoDataFrame(df, geometry=geopandas.points_from_xy(df.lon, df.lat))
-    #gdf = geopandas.GeoDataFrame(df, geometry=geopandas.points_from_xy(df['lon'], df['lat']))
-    col_name_lon = 'lon'
-    col_name_lat = 'lat'
-    remove_temp_file = False
-    sep=' ' # snapping tool writes space-sep
-    gdf = csv_coordinates_to_geodataframe(output_path, col_name_lon, col_name_lat, sep, remove_temp_file)
-    print(gdf.head())
+        #df = pandas.read_csv(output_path, sep=' ')
+        #print(df.head())
+        #gdf = geopandas.GeoDataFrame(df, geometry=geopandas.points_from_xy(df.lon, df.lat))
+        #gdf = geopandas.GeoDataFrame(df, geometry=geopandas.points_from_xy(df['lon'], df['lat']))
+        col_name_lon = 'lon'
+        col_name_lat = 'lat'
+        remove_temp_file = False
+        sep=' ' # snapping tool writes space-sep
+        gdf = csv_coordinates_to_geodataframe(output_path, col_name_lon, col_name_lat, sep, remove_temp_file)
+        print(gdf.head())
