@@ -16,7 +16,11 @@ import string
 
 from pygeoapi.process.aquainfra.calling_r_scripts import PYGEOAPI_DATA_DIR as DATA_DIR
 from pygeoapi.process.aquainfra.calling_r_scripts import geojson_to_csv
-from pygeoapi.process.aquainfra.calling_r_scripts import xxxxx
+from pygeoapi.process.aquainfra.calling_r_scripts import multipoint_to_csv
+from pygeoapi.process.aquainfra.calling_r_scripts import csv_coordinates_to_geodataframe
+from pygeoapi.process.aquainfra.calling_r_scripts import snap_to_network
+
+
 
 '''
 
@@ -34,6 +38,9 @@ https://glowabio.github.io/hydrographr/reference/snap_to_network.html
 
 Locally, the data dir is:
 export PYGEOAPI_DATA_DIR="/home/mbuurman/work/hydro_casestudy_saofra/data"
+
+Curl to test:
+curl -X POST "http://localhost:5000/processes/snap-to-network/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"method\": \"distance\", \"basin_id\": \"481051\", \"accumulation\": 0.5, \"distance\": 500, \"coordinate_multipoint\":{\"coordinates\": [[-44.885825, -17.25355], [-43.595833, -13.763611]], \"type\": \"MultiPoint\"}}}"
 
 '''
 
@@ -163,15 +170,25 @@ class SnapToNetworkProcessor(BaseProcessor):
         multipoint = data.get('coordinate_multipoint')
         LOGGER.debug('Input multipoint: %s (%s)' % (multipoint, type(multipoint)))
 
-        # Make a file out of the input geojson, as the bash file wants them as a file
+        # Make a file out of the input geojson, as the bash script wants them as a file
+        # Writes a comma-separated csv file, as the bash script expects this!
+        #foo,lon,lat
+        #99999,-17.25355,-44.885825
+        #99999,-13.763611,-43.595833
         col_name_lon = 'lon'
         col_name_lat = 'lat'
         input_coord_file_path = multipoint_to_csv(multipoint, col_name_lon, col_name_lat)
 
         # Call the actual tool
-        result_file_path = snap_to_network(input_coord_file_path, basin_id, data_dir)
+        # This writes a space-separated csv file:
+        # mbuurman@IN0142:~$ cat /tmp/__output_snappingtooltool_amf4i.csv
+        #foo lon lat lon_snap_dist lat_snap_dist subc_id_snap_dist
+        #99999 -13.763611 -43.595833
+        #99999 -17.25355 -44.885825
+        result_file_path = snap_to_network(input_coord_file_path, basin_id, method, distance, accumulation, DATA_DIR)
         
         # Result...
+        # This reads a space-separated file as the bash script wrote that:
         remove_temp_file = True
         output_as_geodataframe = csv_coordinates_to_geodataframe(result_file_path, remove_temp_file)
         # TODO TEST this function was coded for specied data, not for snapping! Still works???
@@ -219,7 +236,6 @@ class SnapToNetworkProcessor(BaseProcessor):
         '''
 
         # Convert to geojson:
-        output_as_geodataframe = xyzxyzxy
         LOGGER.debug('Converting result to GeoJSON...')
         output_as_geojson_string = output_as_geodataframe.to_json()
         output_as_geojson_pretty = geojson.loads(output_as_geojson_string)

@@ -23,6 +23,9 @@ from pygeoapi.process.aquainfra.calling_r_scripts import csv_coordinates_to_geod
 '''
 Written by Merret on 2023-10-16
 Just for testing purposes - licenses not checked yet!
+
+Curl to test:
+curl -X POST "http://localhost:5000/processes/get-species-data/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"species_name\": \"Conorhynchos conirostris\", \"basin_id\": \"481051\"}}"
 '''
 
 
@@ -100,6 +103,11 @@ class GetSpeciesData(BaseProcessor):
         # Call R script
         # TODO: Do these two as one step?
         # TODO: Getting stuff from R always via temp file? - How else?
+        # Writes comma-separated:
+        #mbuurman@IN0142:~$ cat /tmp/__output_getspeciesdatatool_8had3.csv
+        #X,Y,occurence_id,longitude,latitude,species,occurrenceStatus,country,year
+        #-44.885825,-17.25355,"1",-44.885825,-17.25355,Conorhynchos conirostris,PRESENT,Brazil,"2021"
+        #-43.595833,-13.763611,"2",-43.595833,-13.763611,Conorhynchos conirostris,PRESENT,Brazil,"2020"
         result_file_path = get_species_data(species_name, basin_id, DATA_DIR)
         remove_temp_file = True
         col_name_lon = 'longitude'

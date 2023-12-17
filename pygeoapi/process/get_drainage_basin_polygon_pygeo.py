@@ -5,22 +5,26 @@ LOGGER = logging.getLogger(__name__)
 
 import geojson
 
-from pygeoapi.process.aquainfra.aquainfra import DATA_DIR
+from pygeoapi.process.aquainfra.calling_r_scripts import PYGEOAPI_DATA_DIR as DATA_DIR
 from pygeoapi.process.aquainfra.aquainfra import _get_basin_polygon
 
+'''
+Curl to test:
+curl -X POST "http://localhost:5000/processes/get-drainage-basin/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"basin_id\": \"481051\"}}"
+'''
 
 
 #: Process metadata and description
 PROCESS_METADATA = {
     'version': '0.0.1',
     'id': 'BLA',
-    'title': {'en': 'BLAAAAAAAA'},
+    'title': {'en': 'Get drainage basin polygon'},
     'description': {
-        'en': 'BLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
-              'BLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+        'en': 'Get drainage basin as a vector polygon (GeoJSON)'
+              'based on drainage basin id.'
     },
     'jobControlOptions': ['sync-execute', 'async-execute'],
-    'keywords': ['BLAAAAAA', 'example'],
+    'keywords': ['polygon', 'drainage-basin'],
     'links': [{
         'type': 'text/html',
         'rel': 'about',

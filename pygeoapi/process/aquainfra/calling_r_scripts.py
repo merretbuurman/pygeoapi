@@ -112,7 +112,7 @@ def _get_dir_scripts():
     if __name__ == '__main__':
         return os.getcwd().rstrip('/')
 
-    return os.getcwd()+'/pygeoapi/process/'.rstrip('/')
+    return os.getcwd()+'/pygeoapi/process/aquainfra/'.rstrip('/')
 
 
 def get_species_data(species_name, basin_id, data_dir):
@@ -136,7 +136,7 @@ def _get_species_data_to_csv(species_name, basin_id, data_dir):
     csv_file_path = _get_output_temp_file('getspeciesdata')
 
     # input file:
-    polygon_inputfile = "%s/basin_%s/basin_%s.gpkg" % (data_dir, basin_id, basin_id)
+    polygon_inputfile = "%s/basin_%s/basin_%s.gpkg" % (data_dir.rstrip('/'), basin_id, basin_id)
 
     # call r script:
     r_file = '/get_species_data.r'
@@ -183,7 +183,7 @@ def _get_species_data_to_csv(species_name, basin_id, data_dir):
 ### Snap to network
 ###
 
-def geojson_to_csv_new(multipoint):
+def geojson_to_csv(multipoint):
 
     # Step 1: GeoJSON to GeoDataFrame
     gdf = multipoint_to_geodataframe(multipoint)
@@ -272,8 +272,8 @@ def snap_to_network(input_coord_file_path, basin_id, method, distance, accumulat
     # data dir: /home/mbuurman/work/hydro_casestudy_saofra/data/
     #path_accumul_tif = path_data+os.sep+'basin_481051/accumulation_481051.tif'
     #path_stream_tif  = path_data+os.sep+'basin_481051/segment_481051.tif'
-    path_accumul_tif = "%s/basin_%s/accumulation_%s.tif" % (data_dir, basin_id, basin_id)
-    path_stream_tif = "%s/basin_%s/segment_%s.tif" % (data_dir, basin_id, basin_id)
+    path_accumul_tif = "%s/basin_%s/accumulation_%s.tif" % (data_dir.rstrip('/'), basin_id, basin_id)
+    path_stream_tif = "%s/basin_%s/segment_%s.tif" % (data_dir.rstrip('/'), basin_id, basin_id)
     tmp_dir =  tempfile.gettempdir()
     #randomstring = (''.join(random.sample(string.ascii_lowercase+string.digits, 5)))
     #snap_tmp_path =  tempfile.gettempdir()+os.sep+'__output_snappingtool_'+randomstring+'.txt' # intermediate result storage used by GRASS!
@@ -315,16 +315,21 @@ if __name__ == '__main__':
         basin_id = '481051'
         csv_file_path = get_species_data(species_name, basin_id, PYGEOAPI_DATA_DIR)
         LOGGER.debug('Result stored to: "%s"' % csv_file_path)
+        # Writes comma-separated:
+        #mbuurman@IN0142:~$ cat /tmp/__output_getspeciesdatatool_8had3.csv
+        #X,Y,occurence_id,longitude,latitude,species,occurrenceStatus,country,year
+        #-44.885825,-17.25355,"1",-44.885825,-17.25355,Conorhynchos conirostris,PRESENT,Brazil,"2021"
+        #-43.595833,-13.763611,"2",-43.595833,-13.763611,Conorhynchos conirostris,PRESENT,Brazil,"2020"
 
         # Step 2: Convert to geodataframe:
-        remove_temp_file = False
+        remove_temp_file = False # for testing
         import geojson
         #output_as_geojson = file_coordinates_to_geojson_old(csv_file_path, remove_temp_file)
         #LOGGER.info('Output geojson %s' % geojson.dumps(output_as_geojson))
         # Convert to geojson:
         col_name_lon = 'longitude'
         col_name_lat = 'latitude'
-        output_as_geodataframe = csv_coordinates_to_geodataframe(csv_file_path, remove_temp_file, col_name_lon, col_name_lat)
+        output_as_geodataframe = csv_coordinates_to_geodataframe(csv_file_path, col_name_lon, col_name_lat, remove_temp_file)
         LOGGER.debug('Converting result to GeoJSON...')
         output_as_geojson_string = output_as_geodataframe.to_json()
         output_as_geojson_pretty = geojson.loads(output_as_geojson_string)
