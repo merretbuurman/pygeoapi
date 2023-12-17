@@ -20,8 +20,11 @@ PROCESS_METADATA = {
     'id': 'BLA',
     'title': {'en': 'Get drainage basin polygon'},
     'description': {
-        'en': 'Get drainage basin as a vector polygon (GeoJSON)'
-              'based on drainage basin id.'
+        'en': 'Get drainage basin as a vector polygon (GeoJSON) '
+              'based on drainage basin id. '
+              '(Exposing stuff from hydrographr package as ogc process: '
+              'https://glowabio.github.io/hydrographr/, part of this case study: '
+              'https://glowabio.github.io/hydrographr/articles/case_study_brazil.html)'
     },
     'jobControlOptions': ['sync-execute', 'async-execute'],
     'keywords': ['polygon', 'drainage-basin'],

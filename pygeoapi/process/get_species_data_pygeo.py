@@ -34,10 +34,12 @@ curl -X POST "http://localhost:5000/processes/get-species-data/execution" -H "Co
 PROCESS_METADATA = {
     'version': '0.0.1',
     'id': 'get-species-data',
-    'title': {'en': 'Get species data from GBIF!'},
+    'title': {'en': 'Get species data from GBIF'},
     'description': {
-        'en': 'Trying to expose stuff from hydrographr package as ogc process: '
-              'https://glowabio.github.io/hydrographr/'
+        'en': 'Getting species data from GBIF via rgbif, inside one drainage basin. '
+              '(Exposing stuff from hydrographr package as ogc process: '
+              'https://glowabio.github.io/hydrographr/, part of this case study: '
+              'https://glowabio.github.io/hydrographr/articles/case_study_brazil.html)'
     },
     'jobControlOptions': ['sync-execute', 'async-execute'],
     'keywords': ['hydrographr', 'example', 'rgbif', 'GBIF'],

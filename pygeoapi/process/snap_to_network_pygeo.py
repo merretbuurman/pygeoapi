@@ -52,8 +52,11 @@ PROCESS_METADATA = {
     'id': 'snap-to-network',
     'title': {'en': 'Snap to network'},
     'description': {
-        'en': 'Trying to expose snap_to_network from hydrographr package as ogc process: '
-              'https://glowabio.github.io/hydrographr/reference/snap_to_network.html.'
+        'en': 'Snapping points to a river network, so that they spatially coincide. '
+              '(Exposing stuff from hydrographr package as ogc process: '
+              'https://glowabio.github.io/hydrographr/reference/snap_to_network.html, '
+              'part of this case study: '
+              'https://glowabio.github.io/hydrographr/articles/case_study_brazil.html)'
     },
     'jobControlOptions': ['sync-execute', 'async-execute'],
     'keywords': ['hydrographr', 'example', 'echo'],
