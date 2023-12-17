@@ -110,9 +110,10 @@ class GetSpeciesData(BaseProcessor):
         #-43.595833,-13.763611,"2",-43.595833,-13.763611,Conorhynchos conirostris,PRESENT,Brazil,"2020"
         result_file_path = get_species_data(species_name, basin_id, DATA_DIR)
         remove_temp_file = True
+        sep = ',' # as get_species_data writes comma-separated
         col_name_lon = 'longitude'
         col_name_lat = 'latitude'
-        output_as_geodataframe = csv_coordinates_to_geodataframe(result_file_path, col_name_lon, col_name_lat, remove_temp_file)
+        output_as_geodataframe = csv_coordinates_to_geodataframe(result_file_path, col_name_lon, col_name_lat, sep, remove_temp_file)
 
         # Convert to geojson:
         LOGGER.debug('Converting result to GeoJSON...')

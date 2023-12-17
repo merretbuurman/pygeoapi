@@ -177,7 +177,8 @@ class SnapToNetworkProcessor(BaseProcessor):
         #99999,-13.763611,-43.595833
         col_name_lon = 'lon'
         col_name_lat = 'lat'
-        input_coord_file_path = multipoint_to_csv(multipoint, col_name_lon, col_name_lat)
+        sep = ','
+        input_coord_file_path = multipoint_to_csv(multipoint, col_name_lon, col_name_lat, sep)
 
         # Call the actual tool
         # This writes a space-separated csv file:
@@ -190,7 +191,8 @@ class SnapToNetworkProcessor(BaseProcessor):
         # Result...
         # This reads a space-separated file as the bash script wrote that:
         remove_temp_file = True
-        output_as_geodataframe = csv_coordinates_to_geodataframe(result_file_path, remove_temp_file)
+        sep = ' '
+        output_as_geodataframe = csv_coordinates_to_geodataframe(result_file_path, col_name_lon, col_name_lat, sep, remove_temp_file)
         # TODO TEST this function was coded for specied data, not for snapping! Still works???
 
         '''

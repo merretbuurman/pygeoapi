@@ -23,7 +23,7 @@ PYGEOAPI_DATA_DIR = '/home/mbuurman/work/hydro_casestudy_saofra/data/'
 path_data = os.environ.get('PYGEOAPI_DATA_DIR', PYGEOAPI_DATA_DIR)
 
 
-def csv_coordinates_to_geodataframe(csv_file_path, col_name_lon, col_name_lat, remove_temp_file=True):
+def csv_coordinates_to_geodataframe(csv_file_path, col_name_lon, col_name_lat, sep, remove_temp_file=True):
     '''
     The CSV file must contain the columns "longitude" and "latitude".
 
@@ -51,7 +51,7 @@ def csv_coordinates_to_geodataframe(csv_file_path, col_name_lon, col_name_lat, r
     LOGGER.debug('Reading result coordinates from file "%s"...' % csv_file_path)
 
     # Load csv into pandas dataframe:
-    df = pandas.read_csv(csv_file_path)
+    df = pandas.read_csv(csv_file_path, sep=sep)
 
     # Load pandas dataframe geopandas geodataframe:
     #gdf = geopandas.GeoDataFrame(df, geometry=geopandas.points_from_xy(df.longitude, df.latitude))
@@ -215,7 +215,7 @@ def geodataframe_to_csv(gdf, csv_file_path, sep=','):
     df.to_csv(csv_file_path, sep, encoding='utf-8')
 
 
-def multipoint_to_csv(multipoint, col_name_lon, col_name_lat, sep=','):
+def multipoint_to_csv(multipoint, col_name_lon, col_name_lat, sep):
     # TODO Use geopandas or something for this! Geojson to 
     # What file is desired?
 
@@ -329,7 +329,8 @@ if __name__ == '__main__':
         # Convert to geojson:
         col_name_lon = 'longitude'
         col_name_lat = 'latitude'
-        output_as_geodataframe = csv_coordinates_to_geodataframe(csv_file_path, col_name_lon, col_name_lat, remove_temp_file)
+        sep = ',' # as get_species_data writes comma-separated
+        output_as_geodataframe = csv_coordinates_to_geodataframe(csv_file_path, col_name_lon, col_name_lat, sep, remove_temp_file)
         LOGGER.debug('Converting result to GeoJSON...')
         output_as_geojson_string = output_as_geodataframe.to_json()
         output_as_geojson_pretty = geojson.loads(output_as_geojson_string)
@@ -351,7 +352,8 @@ if __name__ == '__main__':
     ]}
     col_name_lon = 'lon'
     col_name_lat = 'lat'
-    input_coord_file_path = multipoint_to_csv(multipoint, col_name_lon, col_name_lat)
+    sep=',' # snapping tool expects comma-sep
+    input_coord_file_path = multipoint_to_csv(multipoint, col_name_lon, col_name_lat, sep)
     output_path = snap_to_network(input_coord_file_path, basin_id, method, distance, accumulation, PYGEOAPI_DATA_DIR)
     print('SNAPPING OUTPUT: %s' % output_path)
 
@@ -362,5 +364,6 @@ if __name__ == '__main__':
     col_name_lon = 'lon'
     col_name_lat = 'lat'
     remove_temp_file = False
-    gdf = csv_coordinates_to_geodataframe(output_path, col_name_lon, col_name_lat, remove_temp_file)
+    sep=' ' # snapping tool writes space-sep
+    gdf = csv_coordinates_to_geodataframe(output_path, col_name_lon, col_name_lat, sep, remove_temp_file)
     print(gdf.head())
