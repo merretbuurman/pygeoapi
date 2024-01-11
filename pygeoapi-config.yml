@@ -303,10 +303,10 @@ resources:
         processor:
             name: HelloWorld
 
-    gridunits:
+    annual-indicator:
         type: process
         processor:
-            name: HelcomGridunits
+            name: HelcomAnnualIndicator
 
     assessment-indicator-read:
         type: process

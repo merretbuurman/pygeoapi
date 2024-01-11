@@ -67,7 +67,7 @@ PLUGINS = {
     },
     'process': {
         'HelloWorld': 'pygeoapi.process.hello_world.HelloWorldProcessor',
-        'HelcomGridunits': 'pygeoapi.process.pypro1.HELCOMGridunitsProcessor',
+        'HelcomAnnualIndicator': 'pygeoapi.process.pypro1.HELCOMAnnualIndicatorProcessor',
         'HelcomAssessmentIndicatorRead': 'pygeoapi.process.pypro2_inputread.HELCOMAssessmentIndicatorReadProcessor',
         'HelcomAssessmentIndicatorPosted': 'pygeoapi.process.pypro2_inputposted.HELCOMAssessmentIndicatorPostedProcessor',
         'HelcomAssessmentPosted': 'pygeoapi.process.pypro3_inputposted.HELCOMAssessmentPostedProcessor',
