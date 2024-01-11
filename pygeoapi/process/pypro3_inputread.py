@@ -122,7 +122,7 @@ class HELCOMAssessmentProcessor(BaseProcessor):
         else:
             pass # TODO error
 
-        r_file_name = 'HEAT_subpart5_inputposted.R'
+        r_file_name = 'HEAT_subpart5_inputread.R'
         LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
         LOGGER.debug('Current directory: %s' % os.getcwd())
         r_file = '/home/ubuntu/'+r_file_name
