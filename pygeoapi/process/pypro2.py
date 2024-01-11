@@ -16,6 +16,8 @@ import traceback
 '''
 curl -X POST "http://130.225.37.27:5000/processes/assessment-indicator/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\"}}"
 
+# Save result to file:
+curl -X POST -o /tmp/Assessment_Indicator.csv "http://130.225.37.27:5000/processes/assessment-indicator/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\"}}"
 
 '''
 
@@ -110,9 +112,9 @@ class HELCOMAssessmentIndicatorProcessor(BaseProcessor):
         randomstring = (''.join(random.sample(string.ascii_lowercase+string.digits, 6)))
         output_temp_dir = tempfile.gettempdir()+os.sep+assessmentPeriod+'_'+randomstring
 
-        ########################
-        ### Call R Script 1: ###
-        ########################
+        ######################
+        ### Call R Script: ###
+        ######################
         # I think it takes the map of the assessment units and makes grid units. What for?
     
         # Define input file path: Configuration file.
@@ -125,7 +127,7 @@ class HELCOMAssessmentIndicatorProcessor(BaseProcessor):
         else:
             pass # TODO error
 
-        r_file_name = 'HEAT_subpart4_wk4_wk5.R'
+        #r_file_name = 'HEAT_subpart4_wk4_wk5.R'
         r_file_name = 'HEAT_subpart4_wk5.R'
         LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
         LOGGER.debug('Current directory: %s' % os.getcwd())

@@ -16,6 +16,9 @@ import traceback
 '''
 curl -X POST "http://130.225.37.27:5000/processes/assessment/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\"}}"
 
+# Save result to file:
+curl -X POST -o Assessment.csv "http://130.225.37.27:5000/processes/assessment/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\"}}"
+
 '''
 
 

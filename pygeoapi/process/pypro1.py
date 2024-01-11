@@ -16,6 +16,10 @@ import traceback
 '''
 curl -X POST "http://130.225.37.27:5000/processes/gridunits/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"combined_Chlorophylla_IsWeighted\": true}}"
 
+# Save result to file:
+curl -X POST -o /tmp/Annual_Indicator.csv "http://130.225.37.27:5000/processes/gridunits/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"combined_Chlorophylla_IsWeighted\": true}}"
+
+
 
 '''
 
