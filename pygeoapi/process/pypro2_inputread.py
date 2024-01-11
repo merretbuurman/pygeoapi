@@ -14,10 +14,10 @@ import string
 import traceback
 
 '''
-curl -X POST "http://130.225.37.27:5000/processes/assessment-indicator/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\"}}"
+curl -X POST "http://130.225.37.27:5000/processes/assessment-indicator-read/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\"}}"
 
 # Save result to file:
-curl -X POST -o /tmp/Assessment_Indicator.csv "http://130.225.37.27:5000/processes/assessment-indicator/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\"}}"
+curl -X POST -o /tmp/Assessment_Indicator.csv "http://130.225.37.27:5000/processes/assessment-indicator-read/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\"}}"
 
 '''
 
@@ -25,7 +25,7 @@ curl -X POST -o /tmp/Assessment_Indicator.csv "http://130.225.37.27:5000/process
 #: Process metadata and description
 PROCESS_METADATA = {
     'version': '0.0.1',
-    'id': 'assessment-indicator',
+    'id': 'assessment-indicator-read',
     'title': {'en': 'HELCOM Assessment Indicator'},
     'description': {
         'en': 'Process to compute the HELCOM Assessment Indicator for the HEAT assessment tool.'
@@ -69,14 +69,14 @@ PROCESS_METADATA = {
     }
 }
 
-class HELCOMAssessmentIndicatorProcessor(BaseProcessor):
+class HELCOMAssessmentIndicatorReadProcessor(BaseProcessor):
 
     def __init__(self, processor_def):
         super().__init__(processor_def, PROCESS_METADATA)
 
 
     def __repr__(self):
-        return f'<HELCOMAssessmentIndicatorProcessor> {self.name}'
+        return f'<HELCOMAssessmentIndicatorReadProcessor> {self.name}'
 
 
     def execute(self, data):
@@ -128,7 +128,7 @@ class HELCOMAssessmentIndicatorProcessor(BaseProcessor):
             pass # TODO error
 
         #r_file_name = 'HEAT_subpart4_wk4_wk5.R'
-        r_file_name = 'HEAT_subpart4_wk5.R'
+        r_file_name = 'HEAT_subpart4_wk5_inputread.R'
         LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
         LOGGER.debug('Current directory: %s' % os.getcwd())
         r_file = '/home/ubuntu/'+r_file_name

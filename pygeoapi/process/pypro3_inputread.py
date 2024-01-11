@@ -14,10 +14,10 @@ import string
 import traceback
 
 '''
-curl -X POST "http://130.225.37.27:5000/processes/assessment/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\"}}"
+curl -X POST "http://130.225.37.27:5000/processes/assessment-read/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\"}}"
 
 # Save result to file:
-curl -X POST -o Assessment.csv "http://130.225.37.27:5000/processes/assessment/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\"}}"
+curl -X POST -o Assessment.csv "http://130.225.37.27:5000/processes/assessment-read/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\"}}"
 
 '''
 
@@ -25,7 +25,7 @@ curl -X POST -o Assessment.csv "http://130.225.37.27:5000/processes/assessment/e
 #: Process metadata and description
 PROCESS_METADATA = {
     'version': '0.0.1',
-    'id': 'assessment',
+    'id': 'assessment-read',
     'title': {'en': 'HELCOM Assessment'},
     'description': {
         'en': 'Process to compute the HELCOM Assessment for the HEAT assessment tool.'
@@ -69,14 +69,14 @@ PROCESS_METADATA = {
     }
 }
 
-class HELCOMAssessmentProcessor(BaseProcessor):
+class HELCOMAssessmentReadProcessor(BaseProcessor):
 
     def __init__(self, processor_def):
         super().__init__(processor_def, PROCESS_METADATA)
 
 
     def __repr__(self):
-        return f'<HELCOMAssessmentProcessor> {self.name}'
+        return f'<HELCOMAssessmentReadProcessor> {self.name}'
 
 
     def execute(self, data):

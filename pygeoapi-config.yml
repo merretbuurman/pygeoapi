@@ -308,22 +308,22 @@ resources:
         processor:
             name: HelcomGridunits
 
-    assessment-indicator:
+    assessment-indicator-read:
         type: process
         processor:
-            name: HelcomAssessmentIndicator
+            name: HelcomAssessmentIndicatorRead
 
-    assessment-indicator-b:
+    assessment-indicator-posted:
         type: process
         processor:
-            name: HelcomAssessmentIndicatorB
+            name: HelcomAssessmentIndicatorPosted
 
-    assessment:
+    assessment-read:
         type: process
         processor:
-            name: HelcomAssessment
+            name: HelcomAssessmentRead
 
-    assessment-b:
+    assessment-posted:
         type: process
         processor:
-            name: HelcomAssessmentB
+            name: HelcomAssessmentPosted

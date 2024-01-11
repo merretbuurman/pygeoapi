@@ -15,16 +15,16 @@ import traceback
 
 '''
 # Post dummy data, does not work:
-curl -X POST "http://130.225.37.27:5000/processes/assessment-b/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"abc;def;ghi\"}}"
+curl -X POST "http://130.225.37.27:5000/processes/assessment-posted/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"abc;def;ghi\"}}"
 
 # Save result to file:
-curl -X POST -o /tmp/Assessment.csv "http://130.225.37.27:5000/processes/assessment-b/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"abc;def;ghi\"}}"
+curl -X POST -o /tmp/Assessment.csv "http://130.225.37.27:5000/processes/assessment-posted/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"abc;def;ghi\"}}"
 
 # Read the data to be posted from file (DOES NOT WORK YET):
-curl -X POST "http://130.225.37.27:5000/processes/assessment-b/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"$(cat /tmp/Assessment_Indicator.csv)\"}}"
+curl -X POST "http://130.225.37.27:5000/processes/assessment-posted/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"$(cat /tmp/Assessment_Indicator.csv)\"}}"
 
 # Pass the data directly (NOT TESTED YET):
-curl -X POST "http://130.225.37.27:5000/processes/assessment-b/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"IndicatorID,CriteriaID,Name,Code,Parameters,Units,YearMin,YearMax,MonthMin,MonthMax,DepthMin,DepthMax,Metric,Response,Applied,Comments,GTC_HM,GTC_ML,STC_HM,STC_ML,SSC_HM,SSC_ML,UnitID,ET,ACDEV,EQR_HG,EQR_GM,EQR_MP,EQR_PB,IW,NSTC100,Period,ES,SD,ER,EQR,EQRS,N,N_OBS,GTC,STC,SSC,EQRS_Class,TC,TC_Class,SC,SC_Class,AC_SE,AC_NPA,AC_PA,AC,ACC,ACC_Class,C,C_Class
+curl -X POST "http://130.225.37.27:5000/processes/assessment-posted/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"IndicatorID,CriteriaID,Name,Code,Parameters,Units,YearMin,YearMax,MonthMin,MonthMax,DepthMin,DepthMax,Metric,Response,Applied,Comments,GTC_HM,GTC_ML,STC_HM,STC_ML,SSC_HM,SSC_ML,UnitID,ET,ACDEV,EQR_HG,EQR_GM,EQR_MP,EQR_PB,IW,NSTC100,Period,ES,SD,ER,EQR,EQRS,N,N_OBS,GTC,STC,SSC,EQRS_Class,TC,TC_Class,SC,SC_Class,AC_SE,AC_NPA,AC_PA,AC,ACC,ACC_Class,C,C_Class
 1,1,Dissolved Inorganic Nitrogen,DIN,NTRA+NTRI+AMON,umol/l,2011,2016,12,2,0,10,Mean,1,1,,15,5,0,2,70,50,1,5,50,,,,,25,6,20112016,5.90477244354825,0.611463635163127,1.18095448870965,0.569572690686614,0.462926151557573,6,273,100,100,100,Moderate,100,High,100,High,0.0370074627226476,2.61814578460048e-132,1,1,100,High,100,High
 1,1,Dissolved Inorganic Nitrogen,DIN,NTRA+NTRI+AMON,umol/l,2011,2016,12,2,0,10,Mean,1,1,,15,5,0,2,70,50,2,5,50,,,,,25,5,20112016,6.38332506613757,0.557018546000908,1.27666501322751,0.525382383482524,0.40053983550474,6,45,50,100,0,Moderate,75,High,0,Low,0.0830354222390749,1.2917917372263e-62,1,1,100,High,58.3333333333333,Moderate
 1,1,Dissolved Inorganic Nitrogen,DIN,NTRA+NTRI+AMON,umol/l,2011,2016,12,2,0,10,Mean,1,1,,15,5,0,2,70,50,3,3.3,50,,,,,25,6,20112016,6.02226080246914,0.578965864897596,1.82492751589974,0.368042634110132,0.197288457599592,6,50,50,100,0,Bad,75,High,0,Low,0.0818781378289249,1.10138193566272e-242,1,1,100,High,58.3333333333333,Moderate
@@ -41,7 +41,7 @@ curl -X POST "http://130.225.37.27:5000/processes/assessment-b/execution" -H "Co
 #: Process metadata and description
 PROCESS_METADATA = {
     'version': '0.0.1',
-    'id': 'assessment-b',
+    'id': 'assessment-posted',
     'title': {'en': 'HELCOM Assessment'},
     'description': {
         'en': 'Process to compute the HELCOM Assessment for the HEAT assessment tool.'
@@ -97,14 +97,14 @@ PROCESS_METADATA = {
     }
 }
 
-class HELCOMAssessmentBProcessor(BaseProcessor):
+class HELCOMAssessmentPostedProcessor(BaseProcessor):
 
     def __init__(self, processor_def):
         super().__init__(processor_def, PROCESS_METADATA)
 
 
     def __repr__(self):
-        return f'<HELCOMAssessmentBProcessor> {self.name}'
+        return f'<HELCOMAssessmentPostedProcessor> {self.name}'
 
 
     def execute(self, data):

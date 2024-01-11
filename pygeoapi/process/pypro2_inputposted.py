@@ -15,16 +15,16 @@ import traceback
 
 '''
 # Post dummy data, does not work:
-curl -X POST "http://130.225.37.27:5000/processes/assessment-indicator-b/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"abc;def;ghi\"}}"
+curl -X POST "http://130.225.37.27:5000/processes/assessment-indicator-posted/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"abc;def;ghi\"}}"
 
 # Save result to file:
-curl -X POST -o /tmp/Assessment_Indicator.csv "http://130.225.37.27:5000/processes/assessment-indicator-b/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"abc;def;ghi\"}}"
+curl -X POST -o /tmp/Assessment_Indicator.csv "http://130.225.37.27:5000/processes/assessment-indicator-posted/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"abc;def;ghi\"}}"
 
 # Read the data to be posted from file (DOES NOT WORK YET):
-curl -X POST "http://130.225.37.27:5000/processes/assessment-indicator-b/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"$(cat /tmp/Annual_Indicator.csv)\"}}"
+curl -X POST "http://130.225.37.27:5000/processes/assessment-indicator-posted/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"$(cat /tmp/Annual_Indicator.csv)\"}}"
 
 # Pass the data directly (NOT TESTED YET):
-curl -X POST "http://130.225.37.27:5000/processes/assessment-indicator-b/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"UnitID,IndicatorID,CriteriaID,Name,Code,Parameters,Units,YearMin,YearMax,MonthMin,MonthMax,DepthMin,DepthMax,Metric,Response,Applied,Comments,GTC_HM,GTC_ML,STC_HM,STC_ML,SSC_HM,SSC_ML,ET,ACDEV,EQR_HG,EQR_GM,EQR_MP,EQR_PB,IW,Period,ES,SD,N,NM,GridArea,EQR,EQRS,GTC,STC,SSC,NMP,UnitArea,SE,CI,ER,BEST,W,EQRS_Class
+curl -X POST "http://130.225.37.27:5000/processes/assessment-indicator-posted/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"annual_indicators_csv\": \"UnitID,IndicatorID,CriteriaID,Name,Code,Parameters,Units,YearMin,YearMax,MonthMin,MonthMax,DepthMin,DepthMax,Metric,Response,Applied,Comments,GTC_HM,GTC_ML,STC_HM,STC_ML,SSC_HM,SSC_ML,ET,ACDEV,EQR_HG,EQR_GM,EQR_MP,EQR_PB,IW,Period,ES,SD,N,NM,GridArea,EQR,EQRS,GTC,STC,SSC,NMP,UnitArea,SE,CI,ER,BEST,W,EQRS_Class
 1,1,1,Dissolved Inorganic Nitrogen,DIN,NTRA+NTRI+AMON,umol/l,2011,2016,12,2,0,10,Mean,1,1,,15,5,0,2,70,50,5,50,0.808333333333333,0.666666666666667,0.525,0.383333333333333,25,2011,5.05982456140351,1.91564617523428,38,3,14618863581.4494,0.658784369474013,0.588872051022136,100,100,100,3,15671688012.3213,0.310758844930215,0.60907614394049,1.0119649122807,3.33333333333333,,Moderate
 1,1,1,Dissolved Inorganic Nitrogen,DIN,NTRA+NTRI+AMON,umol/l,2011,2016,12,2,0,10,Mean,1,1,,15,5,0,2,70,50,5,50,0.808333333333333,0.666666666666667,0.525,0.383333333333333,25,2012,5.61457142857143,2.90757429678358,35,3,14618863581.4494,0.593693281088325,0.496978749771753,100,100,100,3,15671688012.3213,0.491469757573183,0.963263024334071,1.12291428571429,3.33333333333333,,Moderate
 1,1,1,Dissolved Inorganic Nitrogen,DIN,NTRA+NTRI+AMON,umol/l,2011,2016,12,2,0,10,Mean,1,1,,15,5,0,2,70,50,5,50,0.808333333333333,0.666666666666667,0.525,0.383333333333333,25,2013,6.06353741496599,1.57517274304946,49,3,14618863581.4494,0.549734108196648,0.434918740983503,100,100,100,3,15671688012.3213,0.225024677578494,0.441040263686586,1.2127074829932,3.33333333333333,,Moderate
@@ -41,7 +41,7 @@ curl -X POST "http://130.225.37.27:5000/processes/assessment-indicator-b/executi
 #: Process metadata and description
 PROCESS_METADATA = {
     'version': '0.0.1',
-    'id': 'assessment-indicator-b',
+    'id': 'assessment-indicator-posted',
     'title': {'en': 'HELCOM Assessment Indicator'},
     'description': {
         'en': 'Process to compute the HELCOM Assessment Indicator for the HEAT assessment tool.'
@@ -97,14 +97,14 @@ PROCESS_METADATA = {
     }
 }
 
-class HELCOMAssessmentIndicatorBProcessor(BaseProcessor):
+class HELCOMAssessmentIndicatorPostedProcessor(BaseProcessor):
 
     def __init__(self, processor_def):
         super().__init__(processor_def, PROCESS_METADATA)
 
 
     def __repr__(self):
-        return f'<HELCOMAssessmentIndicatorBProcessor> {self.name}'
+        return f'<HELCOMAssessmentIndicatorPostedProcessor> {self.name}'
 
 
     def execute(self, data):
@@ -159,8 +159,8 @@ class HELCOMAssessmentIndicatorBProcessor(BaseProcessor):
         else:
             pass # TODO error
 
-        r_file_name = 'HEAT_subpart4_wk4_wk5.R'
-        r_file_name = 'HEAT_subpart4_wk5_b.R'
+        #r_file_name = 'HEAT_subpart4_wk4_wk5.R'
+        r_file_name = 'HEAT_subpart4_wk5_inputposted.R'
         LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
         LOGGER.debug('Current directory: %s' % os.getcwd())
         r_file = '/home/ubuntu/'+r_file_name
