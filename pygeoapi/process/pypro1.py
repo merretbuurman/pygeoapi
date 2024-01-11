@@ -15,7 +15,6 @@ import traceback
 
 '''
 curl -X POST "http://130.225.37.27:5000/processes/gridunits/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"combined_Chlorophylla_IsWeighted\": true}}"
-curl -X POST "http://130.225.37.27:5000/processes/gridunits/execution" -H "Content-Type: application/json" -H "Prefer: respond-async" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\", \"combined_Chlorophylla_IsWeighted\": true}}"
 
 
 '''
@@ -24,19 +23,20 @@ curl -X POST "http://130.225.37.27:5000/processes/gridunits/execution" -H "Conte
 #: Process metadata and description
 PROCESS_METADATA = {
     'version': '0.0.1',
-    'id': 'BLA',
-    'title': {'en': 'BLAAAAAAAA'},
+    'id': 'gridunits',
+    'title': {'en': 'HELCOM Annual Indicator'},
     'description': {
-        'en': 'BLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
-              'BLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+        'en': 'Process to compute the HELCOM Annual Indicator for the HEAT assessment tool.'
+              ' This process represents subpart 1 of the original HEAT assessment computation script.'
+              ' For more info, please go to: https://github.com/ices-tools-prod/HEAT/tree/master'
     },
     'jobControlOptions': ['sync-execute', 'async-execute'],
     'keywords': ['HELCOM', 'HEAT'],
     'links': [{
         'type': 'text/html',
         'rel': 'about',
-        'title': 'information',
-        'href': 'https://BLAAAAAA',
+        'title': 'GitHub repo for the original HEAT analysis',
+        'href': 'https://github.com/ices-tools-prod/HEAT/tree/master',
         'hreflang': 'en-US'
     }],
     'inputs': {
@@ -61,17 +61,18 @@ PROCESS_METADATA = {
     },
     'outputs': {
         'verbal_result': {
-            'title': 'Verbal Result',
-            'description': 'Just says whether it worked.',
+            'title': 'Annual Indicator CSV',
+            'description': 'Annual Indicator CSV (Annual_Indicator.csv), ask HELCOM.',
             'schema': {
                 'type': 'object',
-                'contentMediaType': 'application/json'
+                'contentMediaType': 'application/csv'
             }
         }
     },
     'example': {
         'inputs': {
-            'assessmentPeriod': "2011-2016"
+            'assessmentPeriod': "2011-2016",
+            'combined_Chlorophylla_IsWeighted': true
         }
     }
 }

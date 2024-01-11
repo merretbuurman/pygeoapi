@@ -22,19 +22,20 @@ curl -X POST "http://130.225.37.27:5000/processes/assessment-indicator-b/executi
 #: Process metadata and description
 PROCESS_METADATA = {
     'version': '0.0.1',
-    'id': 'BLA',
-    'title': {'en': 'BLAAAAAAAA'},
+    'id': 'assessment-indicator-b',
+    'title': {'en': 'HELCOM Assessment Indicator'},
     'description': {
-        'en': 'BLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
-              'BLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+        'en': 'Process to compute the HELCOM Assessment Indicator for the HEAT assessment tool.'
+              ' This process represents subpart 2 of the original HEAT assessment computation script.'
+              ' For more info, please go to: https://github.com/ices-tools-prod/HEAT/tree/master'
     },
     'jobControlOptions': ['sync-execute', 'async-execute'],
     'keywords': ['HELCOM', 'HEAT'],
     'links': [{
         'type': 'text/html',
         'rel': 'about',
-        'title': 'information',
-        'href': 'https://BLAAAAAA',
+        'title': 'GitHub repo for the original HEAT analysis',
+        'href': 'https://github.com/ices-tools-prod/HEAT/tree/master',
         'hreflang': 'en-US'
     }],
     'inputs': {
@@ -63,7 +64,7 @@ PROCESS_METADATA = {
     'outputs': {
         'verbal_result': {
             'title': 'Assessment Indicator CSV',
-            'description': 'Assessment Indicator CSV, ask HELCOM.',
+            'description': 'Assessment Indicator CSV (Assessment_Indicator.csv), ask HELCOM.',
             'schema': {
                 'type': 'object',
                 'contentMediaType': 'text/csv'
