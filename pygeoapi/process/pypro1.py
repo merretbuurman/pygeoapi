@@ -76,7 +76,7 @@ PROCESS_METADATA = {
     'example': {
         'inputs': {
             'assessmentPeriod': "2011-2016",
-            'combined_Chlorophylla_IsWeighted': true
+            'combined_Chlorophylla_IsWeighted': 'true'
         }
     }
 }
