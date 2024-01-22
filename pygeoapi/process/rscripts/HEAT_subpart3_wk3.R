@@ -9,9 +9,11 @@ lapply(packages, require, character.only = TRUE)
 # TODO: Can we have named ones?
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
-configurationFileName = args[1]
+configurationFilePath = args[1]
 combined_Chlorophylla_IsWeighted = args[2]
 outputPath = args[3]
+intermediatePath = args[4]
+
 
 # User params
 #assessmentPeriod <- "2016-2021" # HOLAS III
@@ -26,19 +28,14 @@ if (combined_Chlorophylla_IsWeighted == 'true') {
 }
 
 # Define paths for input data
-#inputPath <- file.path("Input", assessmentPeriod)
-#inputPath <- paste0("/home/ubuntu/Input/", assessmentPeriod) # TODO Fix workding dirs!
-inputPath <- "/home/ubuntu/Input" # TODO Fix workding dirs!
-#outputPath <- file.path(paste0("Output", format(Sys.time(), "%Y%m%d_%H%M%S")), assessmentPeriod)
-#outputPath <- file.path(paste0("Output", format(Sys.time(), "%Y%m%d")), assessmentPeriod)
 dir.create(outputPath, showWarnings = FALSE, recursive = TRUE)
 #print(paste('Created output path:', outputPath))
 
 print('Loading inputs: my_units.rds, my_stationSamples.rds')
 #units = readRDS(file = "my_units.rds")
 #stationSamples = readRDS(file = "my_stationSamples.rds")
-units = readRDS(file = "/home/ubuntu/intermediate_files/my_units.rds")
-stationSamples = readRDS(file = "/home/ubuntu/intermediate_files/my_stationSamples.rds")
+units = readRDS(file = paste0(intermediatePath,"/my_units.rds"))
+stationSamples = readRDS(file = paste0(intermediatePath,"/my_stationSamples.rds"))
 
 # Define input files
 #if (assessmentPeriod == "1877-9999") {
@@ -51,11 +48,10 @@ stationSamples = readRDS(file = "/home/ubuntu/intermediate_files/my_stationSampl
 
 # Read indicator configs -------------------------------------------------------
 # This needs "readxl"
-configurationFile <- file.path(inputPath, configurationFileName)
-print(paste('Reading indicators from', configurationFile))
-indicators <- as.data.table(read_excel(configurationFile, sheet = "Indicators", col_types = c("numeric", "numeric", "text", "text", "text", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "text", "numeric", "numeric", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric"))) %>% setkey(IndicatorID)
-indicatorUnits <- as.data.table(read_excel(configurationFile, sheet = "IndicatorUnits", col_types = "numeric")) %>% setkey(IndicatorID, UnitID)
-indicatorUnitResults <- as.data.table(read_excel(configurationFile, sheet = "IndicatorUnitResults", col_types = "numeric")) %>% setkey(IndicatorID, UnitID, Period)
+print(paste('Reading indicators from', configurationFilePath))
+indicators <- as.data.table(read_excel(configurationFilePath, sheet = "Indicators", col_types = c("numeric", "numeric", "text", "text", "text", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "text", "numeric", "numeric", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric"))) %>% setkey(IndicatorID)
+indicatorUnits <- as.data.table(read_excel(configurationFilePath, sheet = "IndicatorUnits", col_types = "numeric")) %>% setkey(IndicatorID, UnitID)
+indicatorUnitResults <- as.data.table(read_excel(configurationFilePath, sheet = "IndicatorUnitResults", col_types = "numeric")) %>% setkey(IndicatorID, UnitID, Period)
 
 
 
@@ -279,8 +275,8 @@ wk3[, EQRS_Class := ifelse(EQRS >= 0.8, "High",
 
 print('R script finished running.')
 
-print('Now writing intermediate files to /home/ubuntu/intermediate_files/')
-intermediateFileName = '/home/ubuntu/intermediate_files/my_wk3.rds'
+intermediateFileName = paste0(intermediatePath,'/my_wk3.rds')
+print(paste('Now writing intermediate files to:', intermediateFileName))
 saveRDS(wk3, file = intermediateFileName)
 
 outputPathComplete = file.path(outputPath, "Annual_Indicator.csv")

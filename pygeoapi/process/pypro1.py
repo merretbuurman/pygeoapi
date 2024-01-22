@@ -101,16 +101,23 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
 
     def _execute(self, data):
 
-        # Defaut directories, if environment var not set:
-        PYGEOAPI_DATA_DIR = '/home/ubuntu/Input' # TODO in production remove this!
 
         # Get PYGEOAPI_DATA_DIR from environment:
-        #if not 'PYGEOAPI_DATA_DIR' in os.environ:
-        #    err_msg = 'ERROR: Missing environment variable PYGEOAPI_DATA_DIR. We cannot find the input data!\nPlease run:\nexport PYGEOAPI_DATA_DIR="/.../"'
-        #    LOGGER.error(err_msg)
-        #    raise ValueError(err_msg)
+        if not 'PYGEOAPI_DATA_DIR' in os.environ:
+            err_msg = 'ERROR: Missing environment variable PYGEOAPI_DATA_DIR. We cannot find the input data!\nPlease run:\nexport PYGEOAPI_DATA_DIR="/.../"'
+            LOGGER.error(err_msg)
+            raise ValueError(err_msg)
 
-        path_data = os.environ.get('PYGEOAPI_DATA_DIR', PYGEOAPI_DATA_DIR)
+        # Get R_SCRIPT_DIR from environment:
+        if not 'R_SCRIPT_DIR' in os.environ:
+            err_msg = 'ERROR: Missing environment variable R_SCRIPT_DIR. We cannot find the R scripts!\nPlease run:\nexport R_SCRIPT_DIR="/.../"'
+            LOGGER.error(err_msg)
+            raise ValueError(err_msg)
+
+        path_data = os.environ.get('PYGEOAPI_DATA_DIR').rstrip('/')
+        path_rscripts = os.environ.get('R_SCRIPT_DIR').rstrip('/')
+        path_intermediate = path_data+os.sep+'intermediate' # TODO Better solution in production!
+        path_intermediate = '/tmp/intermediate' # TODO Better solution in production!
 
         # Get input:
         assessmentPeriod = data.get('assessmentPeriod')
@@ -136,24 +143,21 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
     
         # Define input file paths: Unitsfile, Configuration file.
         if (assessmentPeriod == "1877-9999"):
-            unitsFileName = "1877-9999/HELCOM_subbasin_with_coastal_WFD_waterbodies_or_watertypes_2022_eutro.shp"
-            configurationFileName = "1877-9999/Configuration1877-9999.xlsx"
+            unitsFileName = path_data+os.sep+"1877-9999/HELCOM_subbasin_with_coastal_WFD_waterbodies_or_watertypes_2022_eutro.shp"
+            configurationFileName = path_data+os.sep+"1877-9999/Configuration1877-9999.xlsx"
         elif (assessmentPeriod == "2011-2016"):
-            unitsFileName = "2011-2016/AssessmentUnits.shp"
-            configurationFileName = "2011-2016/Configuration2011-2016.xlsx"
+            unitsFileName = path_data+os.sep+"2011-2016/AssessmentUnits.shp"
+            configurationFileName = path_data+os.sep+"2011-2016/Configuration2011-2016.xlsx"
         elif assessmentPeriod == "2016-2021":
-            unitsFileName = "2016-2021/HELCOM_subbasin_with_coastal_WFD_waterbodies_or_watertypes_2022_eutro.shp"
-            configurationFileName = "2016-2021/Configuration2016-2021.xlsx"
+            unitsFileName = path_data+os.sep+"2016-2021/HELCOM_subbasin_with_coastal_WFD_waterbodies_or_watertypes_2022_eutro.shp"
+            configurationFileName = path_data+os.sep+"2016-2021/Configuration2016-2021.xlsx"
         else:
             pass # TODO error
 
         r_file_name = 'HEAT_subpart1_gridunits.R'
         LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
-        LOGGER.debug('Current directory: %s' % os.getcwd())
-        #cwd = '/home/ubuntu/pygeoapi/pygeoapi/'
-        #r_file = os.getcwd()+'/pygeoapi/process/HEAT_subpart1_gridunits.R'
-        r_file = '/home/ubuntu/'+r_file_name
-        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, assessmentPeriod, unitsFileName, configurationFileName, output_temp_dir]
+        r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
+        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, assessmentPeriod, unitsFileName, configurationFileName, output_temp_dir, path_intermediate]
         LOGGER.debug('Bash command:')
         LOGGER.info(cmd)
         LOGGER.debug('Run command... (Output will be shown once the command has finished)')
@@ -190,28 +194,28 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         ########################
         r_file_name = 'HEAT_subpart2_stations.R'
         LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
-        LOGGER.debug('Current directory: %s' % os.getcwd())
-        r_file = '/home/ubuntu/'.rstrip('/')+'/'+r_file_name
+        r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
+
         # TODO DISCUSS: Adding user's own data, the user passes a file name?
 
         # Define input file paths: Samples file
         # TODO DISCUSS: Let user decide which of the three?
         if (assessmentPeriod == "1877-9999"):
-            stationSamplesBOTFile = "1877-9999/StationSamples1877-9999BOT_2022-12-09.txt.gz"
-            stationSamplesCTDFile = "1877-9999/StationSamples1877-9999CTD_2022-12-09.txt.gz"
-            stationSamplesPMPFile = "1877-9999/StationSamples1877-9999PMP_2022-12-09.txt.gz"
+            stationSamplesBOTFile = path_data+os.sep+"1877-9999/StationSamples1877-9999BOT_2022-12-09.txt.gz"
+            stationSamplesCTDFile = path_data+os.sep+"1877-9999/StationSamples1877-9999CTD_2022-12-09.txt.gz"
+            stationSamplesPMPFile = path_data+os.sep+"1877-9999/StationSamples1877-9999PMP_2022-12-09.txt.gz"
         elif (assessmentPeriod == "2011-2016"):
-            stationSamplesBOTFile = "2011-2016/StationSamples2011-2016BOT_2022-12-09.txt.gz"
-            stationSamplesCTDFile = "2011-2016/StationSamples2011-2016CTD_2022-12-09.txt.gz"
-            stationSamplesPMPFile = "2011-2016/StationSamples2011-2016PMP_2022-12-09.txt.gz"
+            stationSamplesBOTFile = path_data+os.sep+"2011-2016/StationSamples2011-2016BOT_2022-12-09.txt.gz"
+            stationSamplesCTDFile = path_data+os.sep+"2011-2016/StationSamples2011-2016CTD_2022-12-09.txt.gz"
+            stationSamplesPMPFile = path_data+os.sep+"2011-2016/StationSamples2011-2016PMP_2022-12-09.txt.gz"
         elif assessmentPeriod == "2016-2021":
-            stationSamplesBOTFile = "2016-2021/StationSamples2016-2021BOT_2022-12-09.txt.gz"
-            stationSamplesCTDFile = "2016-2021/StationSamples2016-2021CTD_2022-12-09.txt.gz"
-            stationSamplesPMPFile = "2016-2021/StationSamples2016-2021PMP_2022-12-09.txt.gz"
+            stationSamplesBOTFile = path_data+os.sep+"2016-2021/StationSamples2016-2021BOT_2022-12-09.txt.gz"
+            stationSamplesCTDFile = path_data+os.sep+"2016-2021/StationSamples2016-2021CTD_2022-12-09.txt.gz"
+            stationSamplesPMPFile = path_data+os.sep+"2016-2021/StationSamples2016-2021PMP_2022-12-09.txt.gz"
         else:
             pass # TODO error
 
-        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, stationSamplesBOTFile, stationSamplesCTDFile, stationSamplesPMPFile, output_temp_dir]
+        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, stationSamplesBOTFile, stationSamplesCTDFile, stationSamplesPMPFile, output_temp_dir, path_intermediate]
         LOGGER.debug('Bash command:')
         LOGGER.info(cmd)
         LOGGER.debug('Run command... (Output will be shown once the command has finished)')
@@ -242,20 +246,19 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         ########################
         r_file_name = 'HEAT_subpart3_wk3.R'
         LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
-        LOGGER.debug('Current directory: %s' % os.getcwd())
-        r_file = '/home/ubuntu/'.rstrip('/')+'/'+r_file_name
+        r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
 
         # Define input file paths: Config file (indicators)
         if assessmentPeriod == "1877-9999":
-            configurationFileName = "1877-9999/Configuration1877-9999.xlsx"
+            configurationFileName = path_data+os.sep+"1877-9999/Configuration1877-9999.xlsx"
         elif assessmentPeriod == "2011-2016":
-            configurationFileName = "2011-2016/Configuration2011-2016.xlsx"
+            configurationFileName = path_data+os.sep+"2011-2016/Configuration2011-2016.xlsx"
         elif assessmentPeriod == "2016-2021":
-            configurationFileName = "2016-2021/Configuration2016-2021.xlsx"
+            configurationFileName = path_data+os.sep+"2016-2021/Configuration2016-2021.xlsx"
         else:
             pass # TODO error
 
-        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, configurationFileName, str(combined_Chlorophylla_IsWeighted).lower(), output_temp_dir]
+        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, configurationFileName, str(combined_Chlorophylla_IsWeighted).lower(), output_temp_dir, path_intermediate]
         LOGGER.debug('Bash command:')
         LOGGER.info(cmd)
         LOGGER.debug('Run command... (Output will be shown once the command has finished)')

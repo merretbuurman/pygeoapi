@@ -11,35 +11,20 @@ lapply(packages, require, character.only = TRUE)
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
 assessmentPeriod = args[1]
-unitsFileName = args[2]
-configurationFileName = args[3]
+unitsFilePath = args[2]
+configurationFilePath = args[3]
 outputPath = args[4]
+intermediatePath = args[5]
 
 # Define paths for input data
-#inputPath <- file.path("Input", assessmentPeriod)
-#inputPath <- file.path("home", "ubuntu", "Input", assessmentPeriod) # TODO Fix workding dirs!
-inputPath <- paste0("/home/ubuntu/Input") # TODO Fix workding dirs!
-#outputPath <- file.path(paste0("Output", format(Sys.time(), "%Y%m%d_%H%M%S")), assessmentPeriod)
-#outputPath <- file.path(paste0("Output", format(Sys.time(), "%Y%m%d")), assessmentPeriod)
 dir.create(outputPath, showWarnings = FALSE, recursive = TRUE)
 
-unitsFile <- file.path(inputPath, unitsFileName)
-configurationFile <- file.path(inputPath, configurationFileName)
-
-
-# Read indicator configs
-# This needs "readxl"
-#print(paste('Current working directory is:', getwd()))
-#print(paste('Reading indicators from', configurationFile))
-#indicators <- as.data.table(read_excel(configurationFile, sheet = "Indicators", col_types = c("numeric", "numeric", "text", "text", "text", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "text", "numeric", "numeric", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric"))) %>% setkey(IndicatorID)
-#indicatorUnits <- as.data.table(read_excel(configurationFile, sheet = "IndicatorUnits", col_types = "numeric")) %>% setkey(IndicatorID, UnitID)
-#indicatorUnitResults <- as.data.table(read_excel(configurationFile, sheet = "IndicatorUnitResults", col_types = "numeric")) %>% setkey(IndicatorID, UnitID, Period)
 
 # Assessment Units + Grid Units-------------------------------------------------
 
 if (assessmentPeriod == "2011-2016") {
   # Read assessment unit from shape file, requires sf
-  units <- st_read(unitsFile)
+  units <- st_read(unitsFilePath)
   
   # Filter for open sea assessment units, requires data.table
   units <- units[units$Code %like% 'SEA',]
@@ -63,7 +48,7 @@ if (assessmentPeriod == "2011-2016") {
   units$UnitArea <- st_area(units)
 } else {
   # Read assessment unit from shape file
-  units <- st_read(unitsFile) %>% st_zm()
+  units <- st_read(unitsFilePath) %>% st_zm()
   
   # Filter for open sea assessment units
   units <- units[units$HELCOM_ID %like% 'SEA',]
@@ -125,7 +110,7 @@ gridunits30 <- make.gridunits(units, 30000)
 gridunits60 <- make.gridunits(units, 60000)
 
 # This needs "readxl"
-unitGridSize <- as.data.table(read_excel(configurationFile, sheet = "UnitGridSize")) %>% setkey(UnitID)
+unitGridSize <- as.data.table(read_excel(configurationFilePath, sheet = "UnitGridSize")) %>% setkey(UnitID)
 
 a <- merge(unitGridSize[GridSize == 10000], gridunits10 %>% select(UnitID, GridID, GridArea = Area))
 b <- merge(unitGridSize[GridSize == 30000], gridunits30 %>% select(UnitID, GridID, GridArea = Area))
@@ -153,9 +138,10 @@ ggsave(file.path(outputPath, "Assessment_GridUnits.png"), width = 12, height = 9
 
 print('R script finished running.')
 
-print('Now writing intermediate files to /home/ubuntu/intermediate_files/')
-intermediateFileName1 = "/home/ubuntu/intermediate_files/my_gridunits.rds"
-intermediateFileName2 = "/home/ubuntu/intermediate_files/my_units.rds"
+intermediateFileName1 = paste0(intermediatePath,"/my_gridunits.rds")
+intermediateFileName2 = paste0(intermediatePath,"/my_units.rds")
+print(paste('Now writing intermediate files to:', intermediateFileName1, 'and', intermediateFileName2))
+
 saveRDS(gridunits, file = intermediateFileName1)
 print(paste('Stored intermediate result:', intermediateFileName1))
 saveRDS(units, file = intermediateFileName2)

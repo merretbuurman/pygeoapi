@@ -14,37 +14,34 @@ lapply(packages, require, character.only = TRUE)
 # TODO: Can we have named ones?
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
-stationSamplesBOTFileName = args[1]
-stationSamplesCTDFileName = args[2]
-stationSamplesPMPFileName = args[3]
+stationSamplesBOTFilePath = args[1]
+stationSamplesCTDFilePath = args[2]
+stationSamplesPMPFilePath = args[3]
 outputPath = args[4]
+intermediatePath = args[5]
 
 # Define paths for input data
-inputPath <- paste0("/home/ubuntu/Input") # TODO Fix workding dirs!
 dir.create(outputPath, showWarnings = FALSE, recursive = TRUE)
 
-gridunits = readRDS(file = "/home/ubuntu/intermediate_files/my_gridunits.rds")
+gridunits = readRDS(file = paste0(intermediatePath,"/my_gridunits.rds"))
 
 
 # In this script, all files are treated equally, so we just let the client pass the file name.
-stationSamplesBOTFile <- file.path(inputPath, stationSamplesBOTFileName)
-stationSamplesCTDFile <- file.path(inputPath, stationSamplesCTDFileName)
-stationSamplesPMPFile <- file.path(inputPath, stationSamplesPMPFileName)
-print(paste('stationSamplesBOTFile::::', stationSamplesBOTFile))
-print(paste('stationSamplesCTDFile::::', stationSamplesCTDFile))
-print(paste('stationSamplesPMPFile::::', stationSamplesPMPFile))
+print(paste('stationSamplesBOTFile::::', stationSamplesBOTFilePath))
+print(paste('stationSamplesCTDFile::::', stationSamplesCTDFilePath))
+print(paste('stationSamplesPMPFile::::', stationSamplesPMPFilePath))
 
 
 # Ocean hydro chemistry - Bottle and low resolution CTD data, needs "data.table"
-stationSamplesBOT <- fread(input = stationSamplesBOTFile, sep = "\t", na.strings = "NULL", stringsAsFactors = FALSE, header = TRUE, check.names = TRUE)
+stationSamplesBOT <- fread(input = stationSamplesBOTFilePath, sep = "\t", na.strings = "NULL", stringsAsFactors = FALSE, header = TRUE, check.names = TRUE)
 stationSamplesBOT[, Type := "B"]
 
 # Ocean hydro chemistry - High resolution CTD data
-stationSamplesCTD <- fread(input = stationSamplesCTDFile, sep = "\t", na.strings = "NULL", stringsAsFactors = FALSE, header = TRUE, check.names = TRUE)
+stationSamplesCTD <- fread(input = stationSamplesCTDFilePath, sep = "\t", na.strings = "NULL", stringsAsFactors = FALSE, header = TRUE, check.names = TRUE)
 stationSamplesCTD[, Type := "C"]
 
 # Ocean hydro chemistry - Pump data
-stationSamplesPMP <- fread(input = stationSamplesPMPFile, sep = "\t", na.strings = "NULL", stringsAsFactors = FALSE, header = TRUE, check.names = TRUE)
+stationSamplesPMP <- fread(input = stationSamplesPMPFilePath, sep = "\t", na.strings = "NULL", stringsAsFactors = FALSE, header = TRUE, check.names = TRUE)
 stationSamplesPMP[, Type := "P"]
 
 # Combine station samples
@@ -88,8 +85,10 @@ stationSamples <- stations[stationSamples, on = .(Longitude..degrees_east., Lati
 
 print('R script finished running.')
 
-print('Now writing intermediate files to /home/ubuntu/intermediate_files/')
-saveRDS(stationSamples, file = "/home/ubuntu/intermediate_files/my_stationSamples.rds")
+intermediateFileName = paste0(intermediatePath,"/my_stationSamples.rds")
+saveRDS(stationSamples, file = intermediateFileName)
+print(paste('Now writing intermediate files to:', intermediateFileName))
+
 
 print(paste('Now writing outputs to', outputPath))
 # Output station samples mapped to assessment units for contracting parties to check i.e. acceptance level 1
