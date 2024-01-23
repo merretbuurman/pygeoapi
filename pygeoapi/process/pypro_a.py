@@ -92,7 +92,7 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
 
 
     def execute(self, data):
-        LOGGER.info('Starting gridunits.R as ogc_service!"')
+        LOGGER.info('Starting HEAT_subpart1_gridunits - HEAT_subpart2_stations - HEAT_subpart3_wk3 as ogc_service!"')
         try:
             return self._execute(data)
         except Exception as e:
