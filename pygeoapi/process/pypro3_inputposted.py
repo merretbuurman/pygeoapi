@@ -119,16 +119,20 @@ class HELCOMAssessmentPostedProcessor(BaseProcessor):
 
     def _execute(self, data):
 
-        # Defaut directories, if environment var not set:
-        PYGEOAPI_DATA_DIR = '/home/ubuntu/Input' # TODO in production remove this!
-
         # Get PYGEOAPI_DATA_DIR from environment:
-        #if not 'PYGEOAPI_DATA_DIR' in os.environ:
-        #    err_msg = 'ERROR: Missing environment variable PYGEOAPI_DATA_DIR. We cannot find the input data!\nPlease run:\nexport PYGEOAPI_DATA_DIR="/.../"'
-        #    LOGGER.error(err_msg)
-        #    raise ValueError(err_msg)
+        if not 'PYGEOAPI_DATA_DIR' in os.environ:
+            err_msg = 'ERROR: Missing environment variable PYGEOAPI_DATA_DIR. We cannot find the input data!\nPlease run:\nexport PYGEOAPI_DATA_DIR="/.../"'
+            LOGGER.error(err_msg)
+            raise ValueError(err_msg)
 
-        path_data = os.environ.get('PYGEOAPI_DATA_DIR', PYGEOAPI_DATA_DIR)
+        # Get R_SCRIPT_DIR from environment:
+        if not 'R_SCRIPT_DIR' in os.environ:
+            err_msg = 'ERROR: Missing environment variable R_SCRIPT_DIR. We cannot find the R scripts!\nPlease run:\nexport R_SCRIPT_DIR="/.../"'
+            LOGGER.error(err_msg)
+            raise ValueError(err_msg)
+
+        path_data = os.environ.get('PYGEOAPI_DATA_DIR').rstrip('/')
+        path_rscripts = os.environ.get('R_SCRIPT_DIR').rstrip('/')
 
         # Get input:
         assessmentPeriod = data.get('assessmentPeriod')
@@ -153,18 +157,17 @@ class HELCOMAssessmentPostedProcessor(BaseProcessor):
     
         # Define input file path: Configuration file.
         if (assessmentPeriod == "1877-9999"):
-            configurationFileName = "1877-9999/Configuration1877-9999.xlsx"
+            configurationFileName = path_data+os.sep+"1877-9999/Configuration1877-9999.xlsx"
         elif (assessmentPeriod == "2011-2016"):
-            configurationFileName = "2011-2016/Configuration2011-2016.xlsx"
+            configurationFileName = path_data+os.sep+"2011-2016/Configuration2011-2016.xlsx"
         elif assessmentPeriod == "2016-2021":
-            configurationFileName = "2016-2021/Configuration2016-2021.xlsx"
+            configurationFileName = path_data+os.sep+"2016-2021/Configuration2016-2021.xlsx"
         else:
             pass # TODO error
 
         r_file_name = 'HEAT_subpart5_inputposted.R'
         LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
-        LOGGER.debug('Current directory: %s' % os.getcwd())
-        r_file = '/home/ubuntu/'+r_file_name
+        r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
         cmd = ["/usr/bin/Rscript", "--vanilla", r_file, configurationFileName, input_temp_path, output_temp_dir]
         LOGGER.debug('Bash command:')
         LOGGER.info(cmd)
