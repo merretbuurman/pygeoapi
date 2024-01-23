@@ -14,7 +14,8 @@ args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
 configurationFilePath = args[1]
 inputIndicatorsPath = args[2] # Full path to: AnnualIndicators.csv
-outputPath = args[3]
+intermediatePath = args[3]
+outputPath = args[4]
 
 
 # Create directory for outputs (in this case, one CSV file: Assessment_Indicator.csv)
@@ -101,8 +102,8 @@ wk5[, C_Class := ifelse(C >= 75, "High", ifelse(C >= 50, "Moderate", "Low"))]
 
 print('R script finished running.')
 
-print('Now writing intermediate files to /home/ubuntu/intermediate_files/')
-intermediateFileName = '/home/ubuntu/intermediate_files/my_wk5.rds'
+intermediateFileName = paste0(intermediatePath,'/my_wk5.rds')
+print(paste('Now writing intermediate files to:', intermediateFileName))
 saveRDS(wk5, file = intermediateFileName)
 # TODO Maybe instead I can reread Assessment_Indicator.csv?
 
