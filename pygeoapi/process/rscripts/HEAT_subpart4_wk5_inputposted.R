@@ -11,17 +11,12 @@ library(sf)
 # User params
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
-configurationFileName = args[1]
+configurationFilePath = args[1]
 inputIndicatorsPath = args[2]
 outputPath = args[3]
 
 
-# Define paths for input data
-#inputPath <- file.path("Input", assessmentPeriod)
-#inputPath <- paste0("/home/ubuntu/Input/", assessmentPeriod) # TODO Fix workding dirs!
-inputPath <- "/home/ubuntu/Input" # TODO Fix workding dirs!
-#outputPath <- file.path(paste0("Output", format(Sys.time(), "%Y%m%d_%H%M%S")), assessmentPeriod)
-#outputPath <- file.path(paste0("Output", format(Sys.time(), "%Y%m%d")), assessmentPeriod)
+# Create directory for outputs (in this case, one CSV file: Assessment_Indicator.csv)
 dir.create(outputPath, showWarnings = FALSE, recursive = TRUE)
 #print(paste('Created output path:', outputPath))
 
@@ -33,10 +28,9 @@ wk3 = fread(file=inputIndicatorsPath)
 
 
 # Define input files
-configurationFile <- file.path(inputPath, configurationFileName)
-print(paste('Reading indicators from', configurationFile))
-indicators <- as.data.table(read_excel(configurationFile, sheet = "Indicators", col_types = c("numeric", "numeric", "text", "text", "text", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "text", "numeric", "numeric", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric"))) %>% setkey(IndicatorID)
-indicatorUnits <- as.data.table(read_excel(configurationFile, sheet = "IndicatorUnits", col_types = "numeric")) %>% setkey(IndicatorID, UnitID)
+print(paste('Reading indicators from', configurationFilePath))
+indicators <- as.data.table(read_excel(configurationFilePath, sheet = "Indicators", col_types = c("numeric", "numeric", "text", "text", "text", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "text", "numeric", "numeric", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric"))) %>% setkey(IndicatorID)
+indicatorUnits <- as.data.table(read_excel(configurationFilePath, sheet = "IndicatorUnits", col_types = "numeric")) %>% setkey(IndicatorID, UnitID)
 
 
 #####################
