@@ -1,4 +1,3 @@
-
 # Import packages
 library(data.table)
 library(readxl)
@@ -12,7 +11,8 @@ library(sf)
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
 configurationFilePath = args[1]
-outputPath = args[2]
+intermediatePath = args[2]
+outputPath = args[3]
 
 
 # Create directory for outputs (in this case, one CSV file: Assessment.csv)
@@ -22,8 +22,9 @@ dir.create(outputPath, showWarnings = FALSE, recursive = TRUE)
 
 # Load R input data:
 # Which has the same content as: AssessmentIndicators.csv, but was stored on disk by previous process
-print('Loading inputs: my_wk5.rds')
-wk5 = readRDS(file = "/home/ubuntu/intermediate_files/my_wk5.rds")
+intermediateFileName = paste0(intermediatePath,"/my_wk5.rds")
+print(paste('Now reading intermediate files from:', intermediateFileName))
+wk5 = readRDS(file = intermediateFileName)
 
 # Load static input data:
 print(paste('Reading indicators from', configurationFilePath))
@@ -94,8 +95,8 @@ wk9[, C_3_Class := ifelse(C_3 >= 75, "High",
 
 print('R script finished running.')
 
-#print('Now writing intermediate files to /home/ubuntu/intermediate_files/')
-#intermediateFileName = '/home/ubuntu/intermediate_files/my_wk9.rds'
+#intermediateFileName = paste0(intermediatePath,'/my_wk9.rds')
+#print(paste('Now writing intermediate files to:', intermediateFileName))
 #saveRDS(wk9, file = intermediateFileName)
 
 outputPathComplete = file.path(outputPath, "Assessment.csv")
