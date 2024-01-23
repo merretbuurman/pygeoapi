@@ -292,7 +292,6 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
 
         if max(collected_returncodes.values()) == 0:
             res = 'Finished Ok'
-            resultfilepath = output_temp_dir+os.sep+'Annual_Indicator.csv'
             LOGGER.info('Reading result from R process from file "%s"' % resultfilepath)
             with open(resultfilepath, 'r') as mycsv:
                 resultfile = mycsv.read()
