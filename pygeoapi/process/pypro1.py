@@ -116,7 +116,7 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
 
         path_data = os.environ.get('PYGEOAPI_DATA_DIR').rstrip('/')
         path_rscripts = os.environ.get('R_SCRIPT_DIR').rstrip('/')
-        path_intermediate = path_data+os.sep+'intermediate' # TODO Better solution in production!
+        path_intermediate = path_data+os.sep+'intermediate' # Not writeable by Apache2: Need better solution in production!
         path_intermediate = '/tmp/intermediate' # TODO Better solution in production!
 
         # Get input:
@@ -177,8 +177,8 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         LOGGER.info(err_and_out)
 
         # There are no results, except for the two files that R stores for further use:
-        # /home/ubuntu/my_gridunits.rds
-        # /home/ubuntu/my_units.rds
+        # /.../intermediate/my_gridunits.rds
+        # /.../intermediate/my_units.rds
         # and five maps of the Assessment Units:
         # /tmp/.../Assessment_Units.png
         # /tmp/.../Assessment_GridUnits10.png
@@ -235,7 +235,7 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         LOGGER.info(err_and_out)
 
         # Results:
-        # /home/ubuntu/my_stationSamples.rds
+        # /.../intermediate/my_stationSamples.rds
         # /tmp/.../StationSamplesBOT.csv
         # /tmp/.../StationSamplesCTD.csv
         # /tmp/.../StationSamplesPMP.csv
@@ -280,7 +280,7 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         LOGGER.info(err_and_out)
 
         # Results:
-        # /home/ubuntu/my_wk3.rds.rds
+        # /.../intermediate/my_wk3.rds
         # /tmp/.../Annual_Indicator.csv
 
         ################

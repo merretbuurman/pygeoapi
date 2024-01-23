@@ -89,8 +89,8 @@ wk9[, C_3_Class := ifelse(C_3 >= 75, "High",
 
 print('R script finished running.')
 
-#print('Now writing intermediate files to /home/ubuntu/intermediate_files/')
-#intermediateFileName = '/home/ubuntu/intermediate_files/my_wk9.rds'
+#intermediateFileName = paste0(intermediatePath,'/my_wk9.rds')
+#print(paste('Now writing intermediate files to:', intermediateFileName))
 #saveRDS(wk9, file = intermediateFileName)
 
 outputPathComplete = file.path(outputPath, "Assessment.csv")

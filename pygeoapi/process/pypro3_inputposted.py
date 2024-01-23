@@ -187,7 +187,7 @@ class HELCOMAssessmentPostedProcessor(BaseProcessor):
         LOGGER.info(err_and_out)
 
         # There are no results, except for the one file that R stores for further use:
-        # /home/ubuntu/intermediate_files/my_wk5.rds
+        # /.../intermediate/my_wk5.rds
         # and one CSV of the Assessment Indicator:
         # /tmp/.../Assessment_Indicator.csv
 
