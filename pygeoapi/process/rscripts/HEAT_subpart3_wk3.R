@@ -11,7 +11,7 @@ args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
 configurationFilePath = args[1]
 combined_Chlorophylla_IsWeighted = args[2]
-outputPath = args[3]
+outputPathComplete = args[3]
 intermediatePath = args[4]
 
 
@@ -28,7 +28,7 @@ if (combined_Chlorophylla_IsWeighted == 'true') {
 }
 
 # Create directory for outputs (in this case, one CSV file: Annual_Indicator.csv)
-dir.create(outputPath, showWarnings = FALSE, recursive = TRUE)
+dir.create(dirname(outputPathComplete), showWarnings = FALSE, recursive = TRUE)
 #print(paste('Created output path:', outputPath))
 
 
@@ -282,7 +282,6 @@ intermediateFileName = paste0(intermediatePath,'/my_wk3.rds')
 print(paste('Now writing intermediate files to:', intermediateFileName))
 saveRDS(wk3, file = intermediateFileName)
 
-outputPathComplete = file.path(outputPath, "Annual_Indicator.csv")
 print(paste('Now writing outputs to', outputPathComplete))
 fwrite(wk3, file = outputPathComplete)
 print(paste('R script wrote outputs to', outputPathComplete))

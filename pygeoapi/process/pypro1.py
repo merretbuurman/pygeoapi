@@ -258,7 +258,9 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         else:
             pass # TODO error
 
-        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, configurationFileName, str(combined_Chlorophylla_IsWeighted).lower(), output_temp_dir, path_intermediate]
+        resultfilepath = output_temp_dir+os.sep+'Annual_Indicator.csv'
+
+        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, configurationFileName, str(combined_Chlorophylla_IsWeighted).lower(), resultfilepath, path_intermediate]
         LOGGER.debug('Bash command:')
         LOGGER.info(cmd)
         LOGGER.debug('Run command... (Output will be shown once the command has finished)')
