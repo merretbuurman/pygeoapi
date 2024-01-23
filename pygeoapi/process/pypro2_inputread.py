@@ -103,6 +103,8 @@ class HELCOMAssessmentIndicatorReadProcessor(BaseProcessor):
 
         path_data = os.environ.get('PYGEOAPI_DATA_DIR').rstrip('/')
         path_rscripts = os.environ.get('R_SCRIPT_DIR').rstrip('/')
+        path_intermediate = path_data+os.sep+'intermediate' # Not writeable by Apache2: Need better solution in production!
+        path_intermediate = '/tmp/intermediate' # TODO Better solution in production!
 
         # Get input:
         assessmentPeriod = data.get('assessmentPeriod')
@@ -134,7 +136,7 @@ class HELCOMAssessmentIndicatorReadProcessor(BaseProcessor):
         r_file_name = 'HEAT_subpart4_wk5_inputread.R'
         LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
         r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
-        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, configurationFileName, output_temp_dir]
+        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, configurationFileName, path_intermediate, output_temp_dir]
         LOGGER.debug('Bash command:')
         LOGGER.info(cmd)
         LOGGER.debug('Run command... (Output will be shown once the command has finished)')
