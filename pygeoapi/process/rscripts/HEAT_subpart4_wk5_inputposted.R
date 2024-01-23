@@ -1,3 +1,4 @@
+
 # Import packages
 library(data.table)
 library(readxl)
@@ -12,7 +13,7 @@ library(sf)
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
 configurationFilePath = args[1]
-inputIndicatorsPath = args[2]
+inputIndicatorsPath = args[2] # Full path to: AnnualIndicators.csv
 outputPath = args[3]
 
 
@@ -20,14 +21,11 @@ outputPath = args[3]
 dir.create(outputPath, showWarnings = FALSE, recursive = TRUE)
 #print(paste('Created output path:', outputPath))
 
-
-# Load R input data:
-#print('Loading inputs: my_wk3.rds')
-#wk3 = readRDS(file = "/home/ubuntu/intermediate_files/my_wk3.rds")
+# Load R input data: AnnualIndicators.csv
+# This was HTTP-POSTed by the user, then stored to disk by pygeoapi, and now read by R:
 wk3 = fread(file=inputIndicatorsPath)
 
-
-# Define input files
+# Load static input data:
 print(paste('Reading indicators from', configurationFilePath))
 indicators <- as.data.table(read_excel(configurationFilePath, sheet = "Indicators", col_types = c("numeric", "numeric", "text", "text", "text", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "text", "numeric", "numeric", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric"))) %>% setkey(IndicatorID)
 indicatorUnits <- as.data.table(read_excel(configurationFilePath, sheet = "IndicatorUnits", col_types = "numeric")) %>% setkey(IndicatorID, UnitID)

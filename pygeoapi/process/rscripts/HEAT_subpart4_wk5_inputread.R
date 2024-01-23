@@ -1,3 +1,4 @@
+
 # Import packages
 library(data.table)
 library(readxl)
@@ -18,13 +19,12 @@ outputPath = args[2]
 dir.create(outputPath, showWarnings = FALSE, recursive = TRUE)
 #print(paste('Created output path:', outputPath))
 
-
 # Load R input data:
+# Which has the same content as: AnnualIndicators.csv, but was stored on disk by previous process
 print('Loading inputs: my_units.rds, my_stationSamples.rds')
 wk3 = readRDS(file = "/home/ubuntu/intermediate_files/my_wk3.rds")
 
-
-# Define input files
+# Load static input data:
 print(paste('Reading indicators from', configurationFilePath))
 indicators <- as.data.table(read_excel(configurationFilePath, sheet = "Indicators", col_types = c("numeric", "numeric", "text", "text", "text", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "text", "numeric", "numeric", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric"))) %>% setkey(IndicatorID)
 indicatorUnits <- as.data.table(read_excel(configurationFilePath, sheet = "IndicatorUnits", col_types = "numeric")) %>% setkey(IndicatorID, UnitID)

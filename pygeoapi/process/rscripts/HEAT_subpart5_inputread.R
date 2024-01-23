@@ -1,3 +1,4 @@
+
 # Import packages
 library(data.table)
 library(readxl)
@@ -20,13 +21,11 @@ dir.create(outputPath, showWarnings = FALSE, recursive = TRUE)
 
 
 # Load R input data:
+# Which has the same content as: AssessmentIndicators.csv, but was stored on disk by previous process
 print('Loading inputs: my_wk5.rds')
 wk5 = readRDS(file = "/home/ubuntu/intermediate_files/my_wk5.rds")
-#wk5 = fread(file=inputIndicatorsPath)
 
-
-
-# Define input files
+# Load static input data:
 print(paste('Reading indicators from', configurationFilePath))
 indicators <- as.data.table(read_excel(configurationFilePath, sheet = "Indicators", col_types = c("numeric", "numeric", "text", "text", "text", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "text", "numeric", "numeric", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric"))) %>% setkey(IndicatorID)
 print('Reading indicators 1/2 done')

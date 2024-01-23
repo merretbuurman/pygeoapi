@@ -1,6 +1,5 @@
 
 # Import packages
-#packages <- c("sf", "data.table", "tidyverse", "readxl", "ggplot2", "ggmap", "mapview", "httr", "R.utils")
 packages <- c("sf", "data.table", "tidyverse", "readxl")
 lapply(packages, require, character.only = TRUE)
 
