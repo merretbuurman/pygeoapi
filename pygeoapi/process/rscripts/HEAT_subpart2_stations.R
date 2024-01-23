@@ -20,10 +20,13 @@ stationSamplesPMPFilePath = args[3]
 outputPath = args[4]
 intermediatePath = args[5]
 
-# Define paths for input data
+# Create directory for outputs (in this case, three CSV files: StationSamplesBOT.csv, StationSamplesCTD.csv, StationSamplesPMP.csv)
 dir.create(outputPath, showWarnings = FALSE, recursive = TRUE)
 
-gridunits = readRDS(file = paste0(intermediatePath,"/my_gridunits.rds"))
+# Load required intermediate file:
+intermediateFileName = paste0(intermediatePath,"/my_gridunits.rds")
+print(paste('Now reading intermediate file from:', intermediateFileName))
+gridunits = readRDS(file = intermediateFileName)
 
 
 # In this script, all files are treated equally, so we just let the client pass the file name.
@@ -85,6 +88,7 @@ stationSamples <- stations[stationSamples, on = .(Longitude..degrees_east., Lati
 
 print('R script finished running.')
 
+
 intermediateFileName = paste0(intermediatePath,"/my_stationSamples.rds")
 saveRDS(stationSamples, file = intermediateFileName)
 print(paste('Now writing intermediate files to:', intermediateFileName))
@@ -95,5 +99,5 @@ print(paste('Now writing outputs to', outputPath))
 fwrite(stationSamples[Type == 'B'], file.path(outputPath, "StationSamplesBOT.csv"))
 fwrite(stationSamples[Type == 'C'], file.path(outputPath, "StationSamplesCTD.csv"))
 fwrite(stationSamples[Type == 'P'], file.path(outputPath, "StationSamplesPMP.csv"))
-print(paste('R script wrote outputs to', outputPath))
+print(paste('R script wrote outputs to', outputPath, ': StationSamplesBOT.csv, StationSamplesCTD.csv, StationSamplesPMP.csv'))
 

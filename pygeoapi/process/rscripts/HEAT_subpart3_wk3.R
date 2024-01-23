@@ -27,15 +27,18 @@ if (combined_Chlorophylla_IsWeighted == 'true') {
   combined_Chlorophylla_IsWeighted <- FALSE
 }
 
-# Define paths for input data
+# Create directory for outputs (in this case, one CSV file: Annual_Indicator.csv)
 dir.create(outputPath, showWarnings = FALSE, recursive = TRUE)
 #print(paste('Created output path:', outputPath))
 
-print('Loading inputs: my_units.rds, my_stationSamples.rds')
-#units = readRDS(file = "my_units.rds")
-#stationSamples = readRDS(file = "my_stationSamples.rds")
-units = readRDS(file = paste0(intermediatePath,"/my_units.rds"))
-stationSamples = readRDS(file = paste0(intermediatePath,"/my_stationSamples.rds"))
+
+# Load required intermediate file:
+intermediateFileName1 = paste0(intermediatePath,"/my_units.rds")
+intermediateFileName2 = paste0(intermediatePath,"/my_stationSamples.rds")
+print(paste('Now reading intermediate files from:', intermediateFileName1, 'and', intermediateFileName2))
+units = readRDS(file = intermediateFileName1)
+stationSamples = readRDS(file = intermediateFileName2)
+
 
 # Define input files
 #if (assessmentPeriod == "1877-9999") {

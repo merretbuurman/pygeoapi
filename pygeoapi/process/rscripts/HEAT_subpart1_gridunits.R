@@ -16,7 +16,7 @@ configurationFilePath = args[3]
 outputPath = args[4]
 intermediatePath = args[5]
 
-# Define paths for input data
+# Create directory for outputs (in this case, PNG images!)
 dir.create(outputPath, showWarnings = FALSE, recursive = TRUE)
 
 
@@ -133,7 +133,7 @@ ggplot() + geom_sf(data = gridunits60) + coord_sf()
 ggsave(file.path(outputPath, "Assessment_GridUnits60.png"), width = 12, height = 9, dpi = 300)
 ggplot() + geom_sf(data = st_cast(gridunits)) + coord_sf()
 ggsave(file.path(outputPath, "Assessment_GridUnits.png"), width = 12, height = 9, dpi = 300)
-
+print(paste('Stored into', outputPath, ': Assessment_Units.png, Assessment_GridUnits10.png, Assessment_GridUnits20.png, Assessment_GridUnits60.png, Assessment_GridUnits.png')
 # Done!
 
 print('R script finished running.')
