@@ -15,11 +15,11 @@ print(paste0('R Command line args: ', args))
 configurationFilePath = args[1]
 inputIndicatorsPath = args[2] # Full path to: AnnualIndicators.csv
 intermediatePath = args[3]
-outputPath = args[4]
+outputPathComplete = args[4]
 
 
 # Create directory for outputs (in this case, one CSV file: Assessment_Indicator.csv)
-dir.create(outputPath, showWarnings = FALSE, recursive = TRUE)
+dir.create(dirname(outputPathComplete), showWarnings = FALSE, recursive = TRUE)
 #print(paste('Created output path:', outputPath))
 
 # Load R input data: AnnualIndicators.csv
@@ -107,7 +107,6 @@ print(paste('Now writing intermediate files to:', intermediateFileName))
 saveRDS(wk5, file = intermediateFileName)
 # TODO Maybe instead I can reread Assessment_Indicator.csv?
 
-outputPathComplete = file.path(outputPath, "Assessment_Indicator.csv")
 print(paste('Now writing outputs to', outputPathComplete))
 fwrite(wk5, file = outputPathComplete)
 print(paste('R script wrote outputs to', outputPathComplete))

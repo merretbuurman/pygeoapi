@@ -165,10 +165,13 @@ class HELCOMAssessmentPostedProcessor(BaseProcessor):
         else:
             pass # TODO error
 
+        # Output:
+        resultfilepath = output_temp_dir+os.sep+'Assessment.csv'
+
         r_file_name = 'HEAT_subpart5_inputposted.R'
         LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
         r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
-        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, configurationFileName, input_temp_path, output_temp_dir]
+        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, configurationFileName, input_temp_path, resultfilepath]
         LOGGER.debug('Bash command:')
         LOGGER.info(cmd)
         LOGGER.debug('Run command... (Output will be shown once the command has finished)')
@@ -198,7 +201,6 @@ class HELCOMAssessmentPostedProcessor(BaseProcessor):
 
         if p.returncode == 0:
             res = 'Finished Ok'
-            resultfilepath = output_temp_dir+os.sep+'Assessment.csv'
             LOGGER.info('Reading result from R process from file "%s"' % resultfilepath)
             with open(resultfilepath, 'r') as mycsv:
                 resultfile = mycsv.read()
