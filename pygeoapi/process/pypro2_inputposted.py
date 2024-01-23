@@ -134,7 +134,7 @@ class HELCOMAssessmentIndicatorPostedProcessor(BaseProcessor):
 
         # Define output path for this run:
         randomstring = (''.join(random.sample(string.ascii_lowercase+string.digits, 6)))
-        output_temp_dir = tempfile.gettempdir()+os.sep+randomstring
+        output_temp_dir = tempfile.gettempdir()+os.sep+assessmentPeriod+'_'+randomstring
         if not os.path.exists(output_temp_dir):
             os.makedirs(output_temp_dir)
 
