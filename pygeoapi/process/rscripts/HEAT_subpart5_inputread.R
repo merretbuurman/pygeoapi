@@ -12,11 +12,11 @@ args <- commandArgs(trailingOnly = TRUE)
 print(paste0('R Command line args: ', args))
 configurationFilePath = args[1]
 intermediatePath = args[2]
-outputPath = args[3]
+outputPathComplete = args[3]
 
 
 # Create directory for outputs (in this case, one CSV file: Assessment.csv)
-dir.create(outputPath, showWarnings = FALSE, recursive = TRUE)
+dir.create(dirname(outputPathComplete), showWarnings = FALSE, recursive = TRUE)
 #print(paste('Created output path:', outputPath))
 
 
@@ -99,7 +99,6 @@ print('R script finished running.')
 #print(paste('Now writing intermediate files to:', intermediateFileName))
 #saveRDS(wk9, file = intermediateFileName)
 
-outputPathComplete = file.path(outputPath, "Assessment.csv")
 print(paste('Now writing outputs to', outputPathComplete))
 fwrite(wk9, file = outputPathComplete)
 print(paste('R script wrote outputs to', outputPathComplete))
