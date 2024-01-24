@@ -1,9 +1,8 @@
 
 # Import packages
-packages <- c("readxl", "sf", "data.table")
-# sf to get "%>%"
-# "data.table" to get "setkey"
-lapply(packages, require, character.only = TRUE)
+library('readxl')
+library('sf') # to get "%>%"
+library('data.table') # to get "setkey"
 
 
 # TODO: Can we have named ones?

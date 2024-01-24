@@ -1,7 +1,9 @@
 
 # Import packages
-packages <- c("sf", "data.table", "tidyverse", "readxl")
-lapply(packages, require, character.only = TRUE)
+library('readxl')
+library('tidyverse')
+library('sf') # to get "%>%"
+library('data.table') # to get "setkey"
 
 # User params
 #assessmentPeriod <- "2016-2021" # HOLAS III

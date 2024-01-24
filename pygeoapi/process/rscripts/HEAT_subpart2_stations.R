@@ -1,7 +1,7 @@
 
 # Import packages
-packages <- c("sf", "data.table")
-lapply(packages, require, character.only = TRUE)
+library('sf') # to get "%>%"
+library('data.table')
 
 # User params
 #assessmentPeriod <- "2016-2021" # HOLAS III
