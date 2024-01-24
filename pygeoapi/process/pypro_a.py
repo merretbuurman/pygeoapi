@@ -121,7 +121,6 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         # Get input:
         assessmentPeriod = data.get('assessmentPeriod')
         combined_Chlorophylla_IsWeighted = data.get('combined_Chlorophylla_IsWeighted')
-        #LOGGER.debug('CHLORO: %s %s' % (combined_Chlorophylla_IsWeighted, type(combined_Chlorophylla_IsWeighted))) # CHLORO: True <class 'bool'>
 
         # Check validity of argument:
         validAssessmentPeriods = ["1877-9999", "2011-2016", "2016-2021"]
@@ -136,7 +135,6 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
 
         # End result:
         resultfilepath = output_temp_dir+os.sep+'Annual_Indicator.csv'
-
 
         # Start running the various scripts:
         collected_returncodes = {}
@@ -157,18 +155,18 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         ################
         ### Results: ###
         ################
-        LOGGER.debug('R Script return values: %s' % collected_returncodes.values())
 
         if max(collected_returncodes.values()) == 0:
-            res = 'Finished Ok'
             LOGGER.info('Reading result from R process from file "%s"' % resultfilepath)
             with open(resultfilepath, 'r') as mycsv:
                 resultfile = mycsv.read()
             mimetype = 'text/csv'
+            LOGGER.info('Returning CSV content as mimetype "%s"' % mimetype)
             return mimetype, resultfile
 
         else:
-            LOGGER.warning('At least one R process did not return 0, so it went wrong...')
+            LOGGER.warning('At least one R process went wrong. Return values: %s' % collected_returncodes.values())
+
             res = {'problematic_stages': []}
             for rscript, returncode in collected_returncodes.items():
                 if returncode > 0:
@@ -179,14 +177,35 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
                 'value': res
             }
             mimetype = 'application/json'
+            LOGGER.info('Returning error message as mimetype "%s"' % mimetype)
             return mimetype, outputs
 
 
-    def first_r_script(self, r_file_name, path_rscripts, assessmentPeriod, path_data, output_temp_dir, path_intermediate):
+    def call_r_script(self, num, r_file_name, path_rscripts, r_args):
 
-        ########################
-        ### Call R Script 1: ###
-        ########################
+        LOGGER.debug('Now calling bash which calls R: %s' % r_file_name)
+        r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
+        cmd = ["/usr/bin/Rscript", "--vanilla", r_file] + r_args
+        LOGGER.info(cmd)
+        LOGGER.debug('Running command... (Output will be shown once the command has finished)')
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+        LOGGER.debug("Done running command! Exit code from bash: %s" % p.returncode)
+
+        ### Print stdout and stderr
+        stdoutdata, stderrdata = p.communicate()
+        stdouttext = stdoutdata.decode()
+        stderrtext = stderrdata.decode()
+        if len(stderrdata) > 0:
+            err_and_out = '\n___PROCESS OUTPUT {n}___\n___stdout___\n{stdout}\n___stderr___\n{stderr}   (END PROCESS OUTPUT {n})\n___________'.format(
+                stdout= stdouttext, stderr=stderrtext, n=num)
+        else:
+            err_and_out = '\n___PROCESS OUTPUT {n}___\n___stdout___\n{stdout}\n___stderr___\n___(Nothing written to stderr)___\n   (END PROCESS OUTPUT {n})\n___________'.format(
+                stdout = stdouttext, n = num)
+        LOGGER.info(err_and_out)
+        return p.returncode
+
+
+    def first_r_script(self, r_file_name, path_rscripts, assessmentPeriod, path_data, output_temp_dir, path_intermediate):
         # I think it takes the map of the assessment units and makes grid units. What for?
     
         # Define input file paths: Unitsfile, Configuration file.
@@ -202,25 +221,9 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         else:
             pass # TODO error
 
-        LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
-        r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
-        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, assessmentPeriod, unitsFileName, configurationFileName, output_temp_dir, path_intermediate]
-        LOGGER.debug('Bash command:')
-        LOGGER.info(cmd)
-        LOGGER.debug('Run command... (Output will be shown once the command has finished)')
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdoutdata, stderrdata = p.communicate()
-        LOGGER.debug("Done running command!")
-
-        ### Get return code and output
-        LOGGER.info('Bash process exit code: %s' % p.returncode)
-        stdouttext = stdoutdata.decode()
-        stderrtext = stderrdata.decode()
-        if len(stderrdata) > 0:
-            err_and_out = '___PROCESS OUTPUT___\n___stdout___\n%s\n___stderr___\n%s\n___END___' % (stdouttext, stderrtext)
-        else:
-            err_and_out = '___PROCESS OUTPUT___\n___stdout___\n%s\n___(Nothing written to stderr)___\n___END___' % stdouttext
-        LOGGER.info(err_and_out)
+        r_args = [assessmentPeriod, unitsFileName, configurationFileName, output_temp_dir, path_intermediate]
+        returncode = self.call_r_script('1', r_file_name, path_rscripts, r_args)
+        return returncode
 
         # There are no results, except for the two files that R stores for further use:
         # /.../intermediate/my_gridunits.rds
@@ -234,15 +237,8 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         # TODO Discuss: Not leave as single module? Return the R things as some other format?
         # TODO Discuss: Return maps as GeoJSON? Those are static, could just be downloaded. Unless we allow other assessment units one day.
 
-        return p.returncode
 
     def second_r_script(self, r_file_name, path_rscripts, assessmentPeriod, path_data, output_temp_dir, path_intermediate):
-
-        ########################
-        ### Call R Script 2: ###
-        ########################
-        LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
-        r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
 
         # TODO DISCUSS: Adding user's own data, the user passes a file name?
 
@@ -263,23 +259,9 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         else:
             pass # TODO error
 
-        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, stationSamplesBOTFile, stationSamplesCTDFile, stationSamplesPMPFile, output_temp_dir, path_intermediate]
-        LOGGER.debug('Bash command:')
-        LOGGER.info(cmd)
-        LOGGER.debug('Run command... (Output will be shown once the command has finished)')
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdoutdata, stderrdata = p.communicate()
-        LOGGER.debug("Done running command!")
-
-        ### Get return code and output
-        LOGGER.info('Bash process exit code: %s' % p.returncode)
-        stdouttext = stdoutdata.decode()
-        stderrtext = stderrdata.decode()
-        if len(stderrdata) > 0:
-            err_and_out = '___PROCESS OUTPUT___\n___stdout___\n%s\n___stderr___\n%s\n___END___' % (stdouttext, stderrtext)
-        else:
-            err_and_out = '___PROCESS OUTPUT___\n___stdout___\n%s\n___(Nothing written to stderr)___\n___END___' % stdouttext
-        LOGGER.info(err_and_out)
+        r_args = [stationSamplesBOTFile, stationSamplesCTDFile, stationSamplesPMPFile, output_temp_dir, path_intermediate]
+        returncode = self.call_r_script('2', r_file_name, path_rscripts, r_args)
+        return returncode
 
         # Results:
         # /.../intermediate/my_stationSamples.rds
@@ -287,15 +269,8 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         # /tmp/.../StationSamplesCTD.csv
         # /tmp/.../StationSamplesPMP.csv
 
-        return p.returncode
 
     def third_r_script(self, r_file_name, path_rscripts, assessmentPeriod, combined_Chlorophylla_IsWeighted, path_data, resultfilepath, path_intermediate):
-
-        ########################
-        ### Call R Script 3: ###
-        ########################
-        LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
-        r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
 
         # Define input file paths: Config file (indicators)
         if assessmentPeriod == "1877-9999":
@@ -307,30 +282,13 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         else:
             pass # TODO error
 
-        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, configurationFileName, str(combined_Chlorophylla_IsWeighted).lower(), resultfilepath, path_intermediate]
-        LOGGER.debug('Bash command:')
-        LOGGER.info(cmd)
-        LOGGER.debug('Run command... (Output will be shown once the command has finished)')
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdoutdata, stderrdata = p.communicate()
-        LOGGER.debug("Done running command!")
-
-        ### Get return code and output
-        LOGGER.info('Bash process exit code: %s' % p.returncode)
-        stdouttext = stdoutdata.decode()
-        stderrtext = stderrdata.decode()
-        if len(stderrdata) > 0:
-            err_and_out = '___PROCESS OUTPUT___\n___stdout___\n%s\n___stderr___\n%s\n___END___' % (stdouttext, stderrtext)
-        else:
-            err_and_out = '___PROCESS OUTPUT___\n___stdout___\n%s\n___(Nothing written to stderr)___\n___END___' % stdouttext
-        LOGGER.info(err_and_out)
+        r_args = [configurationFileName, str(combined_Chlorophylla_IsWeighted).lower(), resultfilepath, path_intermediate]
+        returncode = self.call_r_script('3', r_file_name, path_rscripts, r_args)
+        return returncode
 
         # Results:
         # /.../intermediate/my_wk3.rds
         # /tmp/.../Annual_Indicator.csv
-
-        return p.returncode
-
 
 
 
