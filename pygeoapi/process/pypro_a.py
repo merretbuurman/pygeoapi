@@ -101,7 +101,6 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
 
     def _execute(self, data):
 
-
         # Get PYGEOAPI_DATA_DIR from environment:
         if not 'PYGEOAPI_DATA_DIR' in os.environ:
             err_msg = 'ERROR: Missing environment variable PYGEOAPI_DATA_DIR. We cannot find the input data!\nPlease run:\nexport PYGEOAPI_DATA_DIR="/.../"'
@@ -135,8 +134,55 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         if not os.path.exists(output_temp_dir):
             os.makedirs(output_temp_dir)
 
+        # End result:
+        resultfilepath = output_temp_dir+os.sep+'Annual_Indicator.csv'
+
+
         # Start running the various scripts:
         collected_returncodes = {}
+
+        r_file_name = 'HEAT_subpart1_gridunits.R'
+        returncode = self.first_r_script(r_file_name, path_rscripts, assessmentPeriod, path_data, output_temp_dir, path_intermediate)
+        collected_returncodes[r_file_name] = returncode
+
+        r_file_name = 'HEAT_subpart2_stations.R'
+        returncode = self.second_r_script(r_file_name, path_rscripts, assessmentPeriod, path_data, output_temp_dir, path_intermediate)
+        collected_returncodes[r_file_name] = returncode
+
+        r_file_name = 'HEAT_subpart3_wk3.R'
+        returncode = self.third_r_script(r_file_name, path_rscripts, assessmentPeriod, combined_Chlorophylla_IsWeighted, path_data, resultfilepath, path_intermediate)
+        collected_returncodes[r_file_name] = returncode
+
+
+        ################
+        ### Results: ###
+        ################
+        LOGGER.debug('R Script return values: %s' % collected_returncodes.values())
+
+        if max(collected_returncodes.values()) == 0:
+            res = 'Finished Ok'
+            LOGGER.info('Reading result from R process from file "%s"' % resultfilepath)
+            with open(resultfilepath, 'r') as mycsv:
+                resultfile = mycsv.read()
+            mimetype = 'text/csv'
+            return mimetype, resultfile
+
+        else:
+            LOGGER.warning('At least one R process did not return 0, so it went wrong...')
+            res = {'problematic_stages': []}
+            for rscript, returncode in collected_returncodes.items():
+                if returncode > 0:
+                    res['problematic_stages'].append(rscript)
+
+            outputs = {
+                'id': 'verbal_result',
+                'value': res
+            }
+            mimetype = 'application/json'
+            return mimetype, outputs
+
+
+    def first_r_script(self, r_file_name, path_rscripts, assessmentPeriod, path_data, output_temp_dir, path_intermediate):
 
         ########################
         ### Call R Script 1: ###
@@ -156,7 +202,6 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         else:
             pass # TODO error
 
-        r_file_name = 'HEAT_subpart1_gridunits.R'
         LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
         r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
         cmd = ["/usr/bin/Rscript", "--vanilla", r_file, assessmentPeriod, unitsFileName, configurationFileName, output_temp_dir, path_intermediate]
@@ -169,7 +214,6 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
 
         ### Get return code and output
         LOGGER.info('Bash process exit code: %s' % p.returncode)
-        collected_returncodes[r_file_name] = p.returncode
         stdouttext = stdoutdata.decode()
         stderrtext = stderrdata.decode()
         if len(stderrdata) > 0:
@@ -190,11 +234,13 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         # TODO Discuss: Not leave as single module? Return the R things as some other format?
         # TODO Discuss: Return maps as GeoJSON? Those are static, could just be downloaded. Unless we allow other assessment units one day.
 
+        return p.returncode
+
+    def second_r_script(self, r_file_name, path_rscripts, assessmentPeriod, path_data, output_temp_dir, path_intermediate):
 
         ########################
         ### Call R Script 2: ###
         ########################
-        r_file_name = 'HEAT_subpart2_stations.R'
         LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
         r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
 
@@ -227,7 +273,6 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
 
         ### Get return code and output
         LOGGER.info('Bash process exit code: %s' % p.returncode)
-        collected_returncodes[r_file_name] = p.returncode
         stdouttext = stdoutdata.decode()
         stderrtext = stderrdata.decode()
         if len(stderrdata) > 0:
@@ -242,11 +287,13 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         # /tmp/.../StationSamplesCTD.csv
         # /tmp/.../StationSamplesPMP.csv
 
+        return p.returncode
+
+    def third_r_script(self, r_file_name, path_rscripts, assessmentPeriod, combined_Chlorophylla_IsWeighted, path_data, resultfilepath, path_intermediate):
 
         ########################
         ### Call R Script 3: ###
         ########################
-        r_file_name = 'HEAT_subpart3_wk3.R'
         LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
         r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
 
@@ -260,8 +307,6 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         else:
             pass # TODO error
 
-        resultfilepath = output_temp_dir+os.sep+'Annual_Indicator.csv'
-
         cmd = ["/usr/bin/Rscript", "--vanilla", r_file, configurationFileName, str(combined_Chlorophylla_IsWeighted).lower(), resultfilepath, path_intermediate]
         LOGGER.debug('Bash command:')
         LOGGER.info(cmd)
@@ -272,7 +317,6 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
 
         ### Get return code and output
         LOGGER.info('Bash process exit code: %s' % p.returncode)
-        collected_returncodes[r_file_name] = p.returncode
         stdouttext = stdoutdata.decode()
         stderrtext = stderrdata.decode()
         if len(stderrdata) > 0:
@@ -285,32 +329,9 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         # /.../intermediate/my_wk3.rds
         # /tmp/.../Annual_Indicator.csv
 
-        ################
-        ### Results: ###
-        ################
-        LOGGER.debug('R Script return values: %s' % collected_returncodes.values())
+        return p.returncode
 
-        if max(collected_returncodes.values()) == 0:
-            res = 'Finished Ok'
-            LOGGER.info('Reading result from R process from file "%s"' % resultfilepath)
-            with open(resultfilepath, 'r') as mycsv:
-                resultfile = mycsv.read()
-            mimetype = 'text/csv'
-            return mimetype, resultfile
 
-        else:
-            LOGGER.warning('At least one R process did not return 0, so it went wrong...')
-            res = {'problematic_stages': []}
-            for rscript, returncode in collected_returncodes.items():
-                if returncode > 0:
-                    res['problematic_stages'].append(rscript)
-
-            outputs = {
-                'id': 'verbal_result',
-                'value': res
-            }
-            mimetype = 'application/json'
-            return mimetype, outputs
 
 
 
