@@ -137,48 +137,39 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         resultfilepath = output_temp_dir+os.sep+'Annual_Indicator.csv'
 
         # Start running the various scripts:
-        collected_returncodes = {}
 
         r_file_name = 'HEAT_subpart1_gridunits.R'
         returncode = self.first_r_script(r_file_name, path_rscripts, assessmentPeriod, path_data, output_temp_dir, path_intermediate)
-        collected_returncodes[r_file_name] = returncode
+        if not returncode == 0:
+            outputs = {'id': 'error_message', 'value': 'R script "%s" failed.' % r_file_name}
+            LOGGER.info('Script "%s" failed. Returning error message.' % r_file_name)
+            return 'application/json', outputs
 
         r_file_name = 'HEAT_subpart2_stations.R'
         returncode = self.second_r_script(r_file_name, path_rscripts, assessmentPeriod, path_data, output_temp_dir, path_intermediate)
-        collected_returncodes[r_file_name] = returncode
+        if not returncode == 0:
+            outputs = {'id': 'error_message', 'value': 'R script "%s" failed.' % r_file_name}
+            LOGGER.info('Script "%s" failed. Returning error message.' % r_file_name)
+            return 'application/json', outputs
 
         r_file_name = 'HEAT_subpart3_wk3.R'
         returncode = self.third_r_script(r_file_name, path_rscripts, assessmentPeriod, combined_Chlorophylla_IsWeighted, path_data, resultfilepath, path_intermediate)
-        collected_returncodes[r_file_name] = returncode
+        if not returncode == 0:
+            outputs = {'id': 'error_message', 'value': 'R script "%s" failed.' % r_file_name}
+            LOGGER.info('Script "%s" failed. Returning error message.' % r_file_name)
+            return 'application/json', outputs
 
 
         ################
         ### Results: ###
         ################
 
-        if max(collected_returncodes.values()) == 0:
-            LOGGER.info('Reading result from R process from file "%s"' % resultfilepath)
-            with open(resultfilepath, 'r') as mycsv:
-                resultfile = mycsv.read()
-            mimetype = 'text/csv'
-            LOGGER.info('Returning CSV content as mimetype "%s"' % mimetype)
-            return mimetype, resultfile
-
-        else:
-            LOGGER.warning('At least one R process went wrong. Return values: %s' % collected_returncodes.values())
-
-            res = {'problematic_stages': []}
-            for rscript, returncode in collected_returncodes.items():
-                if returncode > 0:
-                    res['problematic_stages'].append(rscript)
-
-            outputs = {
-                'id': 'verbal_result',
-                'value': res
-            }
-            mimetype = 'application/json'
-            LOGGER.info('Returning error message as mimetype "%s"' % mimetype)
-            return mimetype, outputs
+        LOGGER.info('Reading result from R process from file "%s"' % resultfilepath)
+        with open(resultfilepath, 'r') as mycsv:
+            resultfile = mycsv.read()
+        mimetype = 'text/csv'
+        LOGGER.info('Returning CSV content as mimetype "%s"' % mimetype)
+        return mimetype, resultfile
 
 
     def call_r_script(self, num, r_file_name, path_rscripts, r_args):
