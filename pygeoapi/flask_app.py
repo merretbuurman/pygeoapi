@@ -47,7 +47,7 @@ dictConfig(
         "version": 1,
         "formatters": {
             "default": {
-                "format": "[%(levelname)s %(levelname)s in %(filename)s: %(message)s",
+                "format": "[%(levelname)s in %(filename)s: %(message)s",
                 #"format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
             }
         },
