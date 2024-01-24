@@ -10,6 +10,7 @@ import os
 import sys
 import traceback
 from pygeoapi.process.utils import get_output_temp_dir
+from pygeoapi.process.utils import call_r_script
 
 
 '''
@@ -167,25 +168,8 @@ class HELCOMAssessmentPostedProcessor(BaseProcessor):
         resultfilepath = output_temp_dir+os.sep+'Assessment.csv'
 
         r_file_name = 'HEAT_subpart5_inputposted.R'
-        LOGGER.info('Now calling bash which calls R: %s' % r_file_name)
-        r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
-        cmd = ["/usr/bin/Rscript", "--vanilla", r_file, configurationFileName, input_temp_path, resultfilepath]
-        LOGGER.debug('Bash command:')
-        LOGGER.info(cmd)
-        LOGGER.debug('Run command... (Output will be shown once the command has finished)')
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdoutdata, stderrdata = p.communicate()
-        LOGGER.debug("Done running command!")
-
-        ### Get return code and output
-        LOGGER.info('Bash process exit code: %s' % p.returncode)
-        stdouttext = stdoutdata.decode()
-        stderrtext = stderrdata.decode()
-        if len(stderrdata) > 0:
-            err_and_out = '___PROCESS OUTPUT___\n___stdout___\n%s\n___stderr___\n%s\n___END___' % (stdouttext, stderrtext)
-        else:
-            err_and_out = '___PROCESS OUTPUT___\n___stdout___\n%s\n___(Nothing written to stderr)___\n___END___' % stdouttext
-        LOGGER.info(err_and_out)
+        r_args = [configurationFileName, input_temp_path, resultfilepath]
+        returncode = call_r_script('1', LOGGER, r_file_name, path_rscripts, r_args)
 
         # There are no results, except for the one file that R stores for further use:
         # /.../intermediate/my_wk5.rds
@@ -197,24 +181,17 @@ class HELCOMAssessmentPostedProcessor(BaseProcessor):
         ### Results: ###
         ################
 
-        if p.returncode == 0:
-            res = 'Finished Ok'
+        if returncode == 0:
             LOGGER.info('Reading result from R process from file "%s"' % resultfilepath)
             with open(resultfilepath, 'r') as mycsv:
                 resultfile = mycsv.read()
             mimetype = 'text/csv'
+            LOGGER.info('Returning CSV content as mimetype "%s"' % mimetype)
             return mimetype, resultfile
 
         else:
-            LOGGER.warning('The R process did not return 0, so it went wrong...')
-            outputs = {
-                'id': 'verbal_result',
-                'value': 'went_wrong' # TODO Better return (error msg) here!
-            }
-            mimetype = 'application/json'
-            return mimetype, outputs
-
-
-
+            outputs = {'id': 'error_message', 'value': 'R script "%s" failed.' % r_file_name}
+            LOGGER.warning('Script "%s" failed. Returning error message.' % r_file_name)
+            return 'application/json', outputs
 
 

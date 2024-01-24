@@ -10,6 +10,7 @@ import os
 import sys
 import traceback
 from pygeoapi.process.utils import get_output_temp_dir
+from pygeoapi.process.utils import call_r_script
 
 
 '''
@@ -154,7 +155,7 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         returncode = self.third_r_script(r_file_name, path_rscripts, assessmentPeriod, combined_Chlorophylla_IsWeighted, path_data, resultfilepath, path_intermediate)
         if not returncode == 0:
             outputs = {'id': 'error_message', 'value': 'R script "%s" failed.' % r_file_name}
-            LOGGER.info('Script "%s" failed. Returning error message.' % r_file_name)
+            LOGGER.warning('Script "%s" failed. Returning error message.' % r_file_name)
             return 'application/json', outputs
 
 
@@ -168,31 +169,6 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         mimetype = 'text/csv'
         LOGGER.info('Returning CSV content as mimetype "%s"' % mimetype)
         return mimetype, resultfile
-
-
-    def call_r_script(self, num, r_file_name, path_rscripts, r_args):
-
-        LOGGER.debug('Now calling bash which calls R: %s' % r_file_name)
-        r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
-        cmd = ["/usr/bin/Rscript", "--vanilla", r_file] + r_args
-        LOGGER.info(cmd)
-        LOGGER.debug('Running command... (Output will be shown once finished)')
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdoutdata, stderrdata = p.communicate()
-        LOGGER.debug("Done running command! Exit code from bash: %s" % p.returncode)
-
-        ### Print stdout and stderr
-        stdouttext = stdoutdata.decode()
-        stderrtext = stderrdata.decode()
-        if len(stderrdata) > 0:
-            err_and_out = 'R stdout and stderr:\n___PROCESS OUTPUT {n}___\n___stdout___\n{stdout}\n___stderr___\n{stderr}   (END PROCESS OUTPUT {n})\n___________'.format(
-                stdout= stdouttext, stderr=stderrtext, n=num)
-        else:
-            err_and_out = 'R stdour:\n___PROCESS OUTPUT {n}___\n___stdout___\n{stdout}\n___stderr___\n___(Nothing written to stderr)___\n   (END PROCESS OUTPUT {n})\n___________'.format(
-                stdout = stdouttext, n = num)
-        LOGGER.info(err_and_out)
-        return p.returncode
-
 
     def first_r_script(self, r_file_name, path_rscripts, assessmentPeriod, path_data, output_temp_dir, path_intermediate):
         # I think it takes the map of the assessment units and makes grid units. What for?
@@ -211,7 +187,7 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
             pass # TODO error
 
         r_args = [assessmentPeriod, unitsFileName, configurationFileName, output_temp_dir, path_intermediate]
-        returncode = self.call_r_script('1', r_file_name, path_rscripts, r_args)
+        returncode = call_r_script('1', LOGGER, r_file_name, path_rscripts, r_args)
         return returncode
 
         # There are no results, except for the two files that R stores for further use:
@@ -249,7 +225,7 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
             pass # TODO error
 
         r_args = [stationSamplesBOTFile, stationSamplesCTDFile, stationSamplesPMPFile, output_temp_dir, path_intermediate]
-        returncode = self.call_r_script('2', r_file_name, path_rscripts, r_args)
+        returncode = call_r_script('2', LOGGER, r_file_name, path_rscripts, r_args)
         return returncode
 
         # Results:
@@ -272,7 +248,7 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
             pass # TODO error
 
         r_args = [configurationFileName, str(combined_Chlorophylla_IsWeighted).lower(), resultfilepath, path_intermediate]
-        returncode = self.call_r_script('3', r_file_name, path_rscripts, r_args)
+        returncode = call_r_script('3', LOGGER, r_file_name, path_rscripts, r_args)
         return returncode
 
         # Results:
