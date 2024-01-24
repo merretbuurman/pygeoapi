@@ -92,7 +92,7 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
 
 
     def execute(self, data):
-        LOGGER.info('Starting HEAT_subpart1_gridunits - HEAT_subpart2_stations - HEAT_subpart3_wk3 as ogc_service!"')
+        LOGGER.info('Starting process "Annual Indicator" (HEAT_subpart1_gridunits - HEAT_subpart2_stations - HEAT_subpart3_wk3) as ogc_service!"')
         try:
             return self._execute(data)
         except Exception as e:
@@ -178,19 +178,19 @@ class HELCOMAnnualIndicatorProcessor(BaseProcessor):
         r_file = path_rscripts.rstrip('/')+os.sep+r_file_name
         cmd = ["/usr/bin/Rscript", "--vanilla", r_file] + r_args
         LOGGER.info(cmd)
-        LOGGER.debug('Running command... (Output will be shown once the command has finished)')
+        LOGGER.debug('Running command... (Output will be shown once finished)')
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdoutdata, stderrdata = p.communicate()
         LOGGER.debug("Done running command! Exit code from bash: %s" % p.returncode)
 
         ### Print stdout and stderr
-        stdoutdata, stderrdata = p.communicate()
         stdouttext = stdoutdata.decode()
         stderrtext = stderrdata.decode()
         if len(stderrdata) > 0:
-            err_and_out = '\n___PROCESS OUTPUT {n}___\n___stdout___\n{stdout}\n___stderr___\n{stderr}   (END PROCESS OUTPUT {n})\n___________'.format(
+            err_and_out = 'R stdout and stderr:\n___PROCESS OUTPUT {n}___\n___stdout___\n{stdout}\n___stderr___\n{stderr}   (END PROCESS OUTPUT {n})\n___________'.format(
                 stdout= stdouttext, stderr=stderrtext, n=num)
         else:
-            err_and_out = '\n___PROCESS OUTPUT {n}___\n___stdout___\n{stdout}\n___stderr___\n___(Nothing written to stderr)___\n   (END PROCESS OUTPUT {n})\n___________'.format(
+            err_and_out = 'R stdour:\n___PROCESS OUTPUT {n}___\n___stdout___\n{stdout}\n___stderr___\n___(Nothing written to stderr)___\n   (END PROCESS OUTPUT {n})\n___________'.format(
                 stdout = stdouttext, n = num)
         LOGGER.info(err_and_out)
         return p.returncode
