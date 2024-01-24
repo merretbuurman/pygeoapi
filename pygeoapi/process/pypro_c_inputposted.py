@@ -8,10 +8,9 @@ import subprocess
 import geojson
 import os
 import sys
-import tempfile
-import random
-import string
 import traceback
+from pygeoapi.process.utils import get_output_temp_dir
+
 
 '''
 The whole process does not work yet, as the read input is not the same as the original R-created input!
@@ -139,8 +138,7 @@ class HELCOMAssessmentPostedProcessor(BaseProcessor):
         assessment_indicators_csv = data.get('assessment_indicators_csv')
 
         # Define output path for this run:
-        randomstring = (''.join(random.sample(string.ascii_lowercase+string.digits, 6)))
-        output_temp_dir = tempfile.gettempdir()+os.sep+assessmentPeriod+'_'+randomstring
+        output_temp_dir = get_output_temp_dir(assessmentPeriod)
         if not os.path.exists(output_temp_dir):
             os.makedirs(output_temp_dir)
 

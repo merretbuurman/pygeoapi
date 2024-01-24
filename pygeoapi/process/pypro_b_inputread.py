@@ -8,10 +8,9 @@ import subprocess
 import geojson
 import os
 import sys
-import tempfile
-import random
-import string
 import traceback
+from pygeoapi.process.utils import get_output_temp_dir
+
 
 '''
 curl -X POST "http://130.225.37.27:5000/processes/assessment-indicator-read/execution" -H "Content-Type: application/json" -d "{\"inputs\":{\"assessmentPeriod\": \"2011-2016\"}}"
@@ -115,8 +114,7 @@ class HELCOMAssessmentIndicatorReadProcessor(BaseProcessor):
             raise ValueError('assessmentPeriod is "%s", must be one of: %s' % (assessmentPeriod, type(assessmentPeriod), validAssessmentPeriods))
 
         # Define output path for this run:
-        randomstring = (''.join(random.sample(string.ascii_lowercase+string.digits, 6)))
-        output_temp_dir = tempfile.gettempdir()+os.sep+assessmentPeriod+'_'+randomstring
+        output_temp_dir = get_output_temp_dir(assessmentPeriod)
         if not os.path.exists(output_temp_dir):
             os.makedirs(output_temp_dir)
 
