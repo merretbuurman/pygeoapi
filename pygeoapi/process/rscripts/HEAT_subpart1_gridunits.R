@@ -124,6 +124,8 @@ gridunits <- st_cast(gridunits)
 #st_write(gridunits, file.path(outputPath, "gridunits.shp"), delete_layer = TRUE)
 
 # Plot the assessment units
+print(paste('Storing PNG graphics to', outputPath))
+pdf(file = NULL)
 ggplot() + geom_sf(data = units) + coord_sf()
 ggsave(file.path(outputPath, "Assessment_Units.png"), width = 12, height = 9, dpi = 300)
 ggplot() + geom_sf(data = gridunits10) + coord_sf()
